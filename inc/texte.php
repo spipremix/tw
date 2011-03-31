@@ -135,6 +135,7 @@ function typo($letexte, $echapper=true, $connect=null) {
 	unset($mem);
 
 	$letexte = corriger_typo($letexte);
+	$letexte = echapper_faux_tags($letexte);
 
 	// reintegrer les echappements
 	if ($echapper)

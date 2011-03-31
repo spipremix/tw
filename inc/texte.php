@@ -20,30 +20,15 @@ include_spip('inc/textwheel');
 // Avec cette surcharge, cette globale n'est plus définie, et du coup ça plante dans les plugins qui font un foreach dessus comme ZPIP
 $GLOBALS['spip_raccourcis_typo'] = array();
 
-// Raccourcis dependant du sens de la langue
-function definir_raccourcis_alineas() {
-	global $ligne_horizontale;
-	static $alineas = array();
-	$x = _DIR_RESTREINT ? lang_dir() : lang_dir($GLOBALS['spip_lang']);
-	if (!isset($alineas[$x])) {
+// class_spip : savoir si on veut class="spip" sur p i strong & li
+// class_spip_plus : class="spip" sur les ul ol h3 hr quote table...
+// la difference c'est que des css specifiques existent pour les seconds
+//
+if (!isset($GLOBALS['class_spip']))
+	$GLOBALS['class_spip'] = '';
+if (!isset($GLOBALS['class_spip_plus']))
+	$GLOBALS['class_spip_plus'] = ' class="spip"';
 
-		$alineas[$x] = array(
-		array(
-		/* 0 */ 	"/\n(----+|____+)/S",
-		/* 1 */ 	"/\n-- */S",
-		/* 2 */ 	"/\n- */S", /* DOIT rester a cette position */
-		/* 3 */ 	"/\n_ +/S"
-				),
-		array(
-		/* 0 */ 	"\n\n" . $ligne_horizontale . "\n\n",
-		/* 1 */ 	"\n<br />&mdash;&nbsp;",
-		/* 2 */ 	"\n<br />".definir_puce()."&nbsp;",
-		/* 3 */ 	"\n<br />"
-				)
-		);
-	}
-	return $alineas[$x];
-}
 
 //
 // echapper les < script ...

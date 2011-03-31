@@ -164,7 +164,7 @@ function traiter_les_notes($notes) {
 			$mes_notes .= "\n\n"
 			. "<div id='nb$ancre'><p". ($GLOBALS['class_spip'] ? " class='spip_note'" : "") .">"
 			. code_echappement($nom
-				? "$ouvre_note<a$atts>$nom</a>$ferme_note"
+				? "$ouvre_note<a".$atts.">$nom</a>$ferme_note"
 				: '')
 			. $texte
 			.'</div>';

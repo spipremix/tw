@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/filtres');
 include_spip('inc/lang');
@@ -70,11 +70,16 @@ function definir_puce() {
 
 // XHTML - Preserver les balises-bloc : on liste ici tous les elements
 // dont on souhaite qu'ils provoquent un saut de paragraphe
-define('_BALISES_BLOCS',
-	'div|pre|ul|ol|li|blockquote|h[1-6r]|'
-	.'t(able|[rdh]|body|foot|extarea)|'
+
+if (!defined('_BALISES_BLOCS')) define('_BALISES_BLOCS',
+	'p|div|pre|ul|ol|li|blockquote|h[1-6r]|'
+	.'t(able|[rdh]|head|body|foot|extarea)|'
 	.'form|object|center|marquee|address|'
+	.'applet|iframe|'
 	.'d[ltd]|script|noscript|map|button|fieldset|style');
+
+if (!defined('_BALISES_BLOCS_REGEXP'))
+	define('_BALISES_BLOCS_REGEXP',',</?('._BALISES_BLOCS.')[>[:space:]],iS');
 
 //
 // Echapper les elements perilleux en les passant en base64
@@ -84,13 +89,12 @@ define('_BALISES_BLOCS',
 // une $source differente ; le script detecte automagiquement si ce qu'on
 // echappe est un div ou un span
 // http://doc.spip.org/@code_echappement
-function code_echappement($rempl, $source='', $no_transform=false) {
+function code_echappement($rempl, $source='', $no_transform=false, $mode=NULL) {
 	if (!strlen($rempl)) return '';
 
 	// Tester si on echappe en span ou en div
-	$mode = preg_match(',</?('._BALISES_BLOCS.')[>[:space:]],iS', $rempl) ?
-		'div' : 'span';
-	$return = '';
+	if (is_null($mode) OR !in_array($mode,array('div','span')))
+		$mode = preg_match(',</?('._BALISES_BLOCS.')[>[:space:]],iS', $rempl) ? 'div' : 'span';
 
 	// Decouper en morceaux, base64 a des probleme selon la taille de la pile
 	$taille = 30000;
@@ -119,7 +123,7 @@ function traiter_echap_html_dist($regs) {
 // http://doc.spip.org/@traiter_echap_code_dist
 function traiter_echap_code_dist($regs) {
 	list(,,$att,$corps) = $regs;
-	$echap = htmlspecialchars($corps); // il ne faut pas passer dans entites_html, ne pas transformer les &#xxx; du code !
+	$echap = htmlspecialchars($corps); // il ne faut pas passer dans entites_html, ne pas transformer les &#xxx; du code ! 
 
 	// ne pas mettre le <div...> s'il n'y a qu'une ligne
 	if (is_int(strpos($echap,"\n"))) {
@@ -177,7 +181,7 @@ $preg='') {
 	if (!is_string($letexte) or !strlen($letexte))
 		return $letexte;
 
-	if (($preg OR strpos($letexte,"<")!==false) 
+	if (($preg OR strpos($letexte,"<")!==false)
 	  AND preg_match_all($preg ? $preg : _PROTEGE_BLOCS, $letexte, $matches, PREG_SET_ORDER))
 		foreach ($matches as $regs) {
 			// echappements tels quels ?
@@ -252,15 +256,17 @@ function echappe_retour($letexte, $source='', $filtre = "") {
 // Reinserer le javascript de confiance (venant des modeles)
 
 // http://doc.spip.org/@echappe_retour_modeles
-function echappe_retour_modeles($letexte, $interdire_scripts=false){
+function echappe_retour_modeles($letexte, $interdire_scripts=false)
+{
 	$letexte = echappe_retour($letexte);
 
 	// Dans les appels directs hors squelette, securiser aussi ici
 	if ($interdire_scripts)
-		$letexte = interdire_scripts($letexte,true);
+		$letexte = interdire_scripts($letexte);
 
 	return trim($letexte);
 }
+
 
 // http://doc.spip.org/@couper
 function couper($texte, $taille=50, $suite = '&nbsp;(...)') {
@@ -297,7 +303,7 @@ function couper($texte, $taille=50, $suite = '&nbsp;(...)') {
 	$texte = unicode2charset(html2unicode($texte, /* secure */ true));
 	$texte = nettoyer_raccourcis_typo($texte);
 
-	// corriger la longueur de coupe
+	// corriger la longueur de coupe 
 	// en fonction de la presence de caracteres utf
 	if ($GLOBALS['meta']['charset']=='utf-8'){
 		$long = charset2unicode($texte);
@@ -381,11 +387,13 @@ function protege_js_modeles($t) {
 // aussi les balises des squelettes qui ne passent pas forcement par propre ou typo apres
 // http://doc.spip.org/@interdire_scripts
 function interdire_scripts($arg) {
+	// on memorise le resultat sur les arguments non triviaux
 	static $dejavu = array();
 	static $wheel = null;
 
 	// Attention, si ce n'est pas une chaine, laisser intact
-	if (!$arg OR !is_string($arg) OR !strstr($arg, '<')) return $arg;
+	if (!$arg OR !is_string($arg) OR !strstr($arg, '<')) return $arg; 
+
 	if (isset($dejavu[$GLOBALS['filtrer_javascript']][$arg])) return $dejavu[$GLOBALS['filtrer_javascript']][$arg];
 
 	if (!isset($wheel)){
@@ -417,6 +425,8 @@ function interdire_scripts($arg) {
 function safehtml($t) {
 	static $safehtml;
 
+	if (!$t OR !is_string($t))
+		return $t;
 	# attention safehtml nettoie deux ou trois caracteres de plus. A voir
 	if (strpos($t,'<')===false)
 		return str_replace("\x00", '', $t);
@@ -461,6 +471,7 @@ function typo($letexte, $echapper=true, $connect=null) {
 	//
 	// NOTE : propre() ne passe pas par ici mais directement par corriger_typo
 	// cf. inc/lien
+
 	$letexte = traiter_modeles($mem = $letexte, false, $echapper ? 'TYPO' : '', $connect);
 	if ($letexte != $mem) $echapper = true;
 	unset($mem);
@@ -534,10 +545,12 @@ function corriger_typo($t, $lang='') {
 // Tableaux
 //
 
-define('_RACCOURCI_TH_SPAN', '\s*(?:{{[^{}]+}}\s*)?|<');
+define('_RACCOURCI_TH_SPAN', '\s*(:?{{[^{}]+}}\s*)?|<');
 
 // http://doc.spip.org/@traiter_tableau
 function traiter_tableau($bloc) {
+	// id "unique" pour les id du tableau
+	$tabid = substr(md5($bloc),0,4);
 
 	// Decouper le tableau en lignes
 	preg_match_all(',([|].*)[|]\n,UmsS', $bloc, $regs, PREG_PATTERN_ORDER);
@@ -548,7 +561,8 @@ function traiter_tableau($bloc) {
 
 	// Traiter chaque ligne
 	$reg_line1 = ',^(\|(' . _RACCOURCI_TH_SPAN . '))+$,sS';
-	$reg_line_all = ',^'  . _RACCOURCI_TH_SPAN . '$,sS';
+	$reg_line_all = ',^('  . _RACCOURCI_TH_SPAN . ')$,sS';
+	$hc = $hl = array();
 	foreach ($regs[1] as $ligne) {
 		$l ++;
 
@@ -564,7 +578,7 @@ function traiter_tableau($bloc) {
 			}
 		// - <thead> sous la forme |{{titre}}|{{titre}}|
 		//   Attention thead oblige a avoir tbody
-			else if (preg_match($reg_line1,	$ligne)) {
+			else if (preg_match($reg_line1,	$ligne, $thead)) {
 			  	preg_match_all('/\|([^|]*)/S', $ligne, $cols);
 				$ligne='';$cols= $cols[1];
 				$colspan=1;
@@ -579,7 +593,8 @@ function traiter_tableau($bloc) {
 					  }
 					  // inutile de garder le strong qui n'a servi que de marqueur 
 					  $cols[$c] = str_replace(array('{','}'), '', $cols[$c]);
-					  $ligne= "<th scope='col'$attr>$cols[$c]</th>$ligne";
+					  $ligne= "<th id='id{$tabid}_c$c' $attr>$cols[$c]</th>$ligne";
+						$hc[$c] = "id{$tabid}_c$c"; // pour mettre dans les headers des td
 					}
 				}
 
@@ -611,25 +626,31 @@ function traiter_tableau($bloc) {
 	$rowspans = $numeric = array();
 	$n = count($lignes[0]);
 	$k = count($lignes);
+	// distinguer les colonnes numeriques a point ou a virgule,
+	// pour les alignements eventuels sur "," ou "."
+	$numeric_class = array('.'=>'point',','=>'virgule');
 	for($i=0;$i<$n;$i++) {
 	  $align = true;
-	  for ($j=0;$j<$k;$j++) $rowspans[$j][$i] = 1;
 	  for ($j=0;$j<$k;$j++) {
-	    $cell = trim($lignes[$j][$i]);
-	    if (preg_match($reg_line_all, $cell)) {
-		if (!preg_match('/^\d+([.,]?)\d*$/', $cell, $r))
-		  { $align = ''; break;}
-		else if ($r[1]) $align = $r[1];
-	      }
+		  $rowspans[$j][$i] = 1;
+			if ($align AND preg_match('/^\d+([.,]?)\d*$/', trim($lignes[$j][$i]), $r)){
+				if ($r[1])
+					$align = $r[1];
+			}
+			else
+				$align = '';
 	  }
-	  $numeric[$i] = !$align ? '' :
-	    (" style='text-align: " .
-	     // http://www.w3.org/TR/REC-CSS2/tables.html#column-alignment
-	     // specifie text-align: "," pour cadrer le long de la virgule
-	     // mais les navigateurs ne l'implementent pas ou mal
-	     (/* $align !== true ?"\"$align\"" : */ 'right') .
-	     "'");
+	  $numeric[$i] = $align ? (" class='numeric ".$numeric_class[$align]."'") : '';
 	}
+	for ($j=0;$j<$k;$j++) {
+		if (preg_match($reg_line_all, $lignes[$j][0])) {
+			$hl[$j] = "id{$tabid}_l$j"; // pour mettre dans les headers des td
+		}
+		else
+			unset($hl[0]);
+	}
+	if (!isset($hl[0]))
+		$hl = array(); // toute la colonne ou rien
 
 	// et on parcourt le tableau a l'envers pour ramasser les
 	// colspan et rowspan en passant
@@ -641,7 +662,7 @@ function traiter_tableau($bloc) {
 		$ligne='';
 
 		for($c=count($cols)-1; $c>=0; $c--) {
-			$attr= $numeric[$c];
+			$attr= $numeric[$c]; 
 			$cell = trim($cols[$c]);
 			if($cell=='<') {
 			  $colspan++;
@@ -657,7 +678,14 @@ function traiter_tableau($bloc) {
 			  if(($x=$rowspans[$l][$c])>1) {
 				$attr.= " rowspan='$x'";
 			  }
-			  $ligne= "\n<td".$attr.'>'.$cols[$c].'</td>'.$ligne;
+				$h = (isset($hc[$c])?$hc[$c]:'').' '.(isset($hl[$l])?$hl[$l]:'');
+				if ($h=trim($h))
+					$attr.=" headers='$h'";
+				$b = ($c==0 AND isset($hl[$l]))?'th':'td';
+				// inutile de garder le strong qui n'a servi que de marqueur
+				if ($b=='th')
+					$cols[$c] = str_replace(array('{','}'), '', $cols[$c]);
+			  $ligne= "\n<$b".$attr.'>'.$cols[$c]."</$b>".$ligne;
 			}
 		}
 
@@ -792,6 +820,9 @@ function paragrapher($letexte, $forcer=true) {
 	if ($forcer OR (
 	strstr($letexte,'<') AND preg_match(',<p\b,iS',$letexte)
 	)) {
+		// toujours ouvrir un parapgraphe derriere une balise bloc fermante
+		// Fermer les paragraphes (y compris sur "STOP P")
+		$letexte = preg_replace(',</('._BALISES_BLOCS.')[^>]*>\s*?,UimsS',"\\0<p>", $letexte);
 
 		// Ajouter un espace aux <p> et un "STOP P"
 		// transformer aussi les </p> existants en <p>, nettoyes ensuite
@@ -800,7 +831,7 @@ function paragrapher($letexte, $forcer=true) {
 
 		// Fermer les paragraphes (y compris sur "STOP P")
 		$letexte = preg_replace(',(<p\s.*)(</?(STOP P|'._BALISES_BLOCS.')[>[:space:]]),UimsS',
-			"\n\\1</p>\n\\2", $letexte);
+			"\\1</p>\n\\2", $letexte);
 
 		// Supprimer les marqueurs "STOP P"
 		$letexte = str_replace('<STOP P>', '', $letexte);
@@ -815,9 +846,8 @@ function paragrapher($letexte, $forcer=true) {
 			$letexte);
 
 		// Renommer les paragraphes normaux
-		$letexte = str_replace('<p >', "<p$class_spip>",
+		$letexte = str_replace('<p >', "\n<p$class_spip>",
 			$letexte);
-
 	}
 
 	return $letexte;
@@ -845,8 +875,8 @@ function traiter_poesie($letexte)
 // http://doc.spip.org/@traiter_retours_chariots
 function traiter_retours_chariots($letexte) {
 	$letexte = preg_replace(",\r\n?,S", "\n", $letexte);
-	$letexte = preg_replace(",<p[>[:space:]],iS", "\n\n$0", $letexte);
-	$letexte = preg_replace(",</p[>[:space:]],iS", "$0\n\n", $letexte);
+	$letexte = preg_replace(",<p[>[:space:]],iS", "\n\n\\0", $letexte);
+	$letexte = preg_replace(",</p[>[:space:]],iS", "\\0\n\n", $letexte);
 	return $letexte;
 }
 

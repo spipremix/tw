@@ -3,14 +3,14 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2010                                                *
+ *  Copyright (c) 2001-2011                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('base/abstract_sql');
 
@@ -29,12 +29,17 @@ function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='
 	// la traduction ;
 	// - [{en}->art2] => traduction anglaise de l'article 2, sinon art 2
 	// - [{}->art2] => traduction en langue courante de l'art 2, sinon art 2
+	// s'applique a tout objet traduit
 	if ($hlang
 	AND $match = typer_raccourci($lien)) { 
-		@list($type,,$id,,$args,,$ancre) = $match; 
-		if ($id_trad = sql_getfetsel('id_trad', 'spip_articles', "id_article=$id")
-		AND $id_dest = sql_getfetsel('id_article', 'spip_articles',
-			"id_trad=$id_trad AND lang=" . sql_quote($hlang))
+		@list($type,,$id,,$args,,$ancre) = $match;
+		$table_objet_sql = table_objet_sql($type);
+		$id_table_objet = id_table_objet($type);
+		if ($row=sql_fetsel('*', $table_objet_sql, "$id_table_objet=".intval($id))
+			AND isset($row['id_trad'])
+			AND isset($row['lang'])
+			AND $id_dest = sql_getfetsel($id_table_objet, $table_objet_sql,"id_trad=".intval($row['id_trad'])." AND lang=" . sql_quote($hlang))
+			AND objet_test_si_publie($type,$id_dest)
 		)
 			$lien = "$type$id_dest";
 		else
@@ -282,33 +287,32 @@ function traiter_raccourci_liens($t) {
 	return preg_replace_callback(_EXTRAIRE_LIENS, 'traiter_autoliens', $t);
 }
 
-// Fonction pour les champs chapo commencant par =,  redirection qui peut etre:
-// 1. un raccourci Spip habituel (premier If) [texte->TYPEnnn]
-// 2. un ultra raccourci TYPEnnn voire nnn (article) (deuxieme If)
-// 3. une URL std
-// renvoie une tableau structure comme ci-dessus mais sans calcul d'URL
-// (cf fusion de sauvegardes)
 
 define('_RACCOURCI_CHAPO', '/^(\W*)(\W*)(\w*\d+([?#].*)?)$/');
-
-// http://doc.spip.org/@chapo_redirige
-function chapo_redirige($chapo, $url=false)
-{
-	if (!preg_match(_RACCOURCI_LIEN, $chapo, $m))
-		if (!preg_match(_RACCOURCI_CHAPO, $chapo, $m))
-			return $chapo;
+/**
+ * Fonction pour les champs virtuels de redirection qui peut etre:
+ * 1. un raccourci Spip habituel (premier If) [texte->TYPEnnn]
+ * 2. un ultra raccourci TYPEnnn voire nnn (article) (deuxieme If)
+ * 3. une URL std
+ *
+ * renvoie l'url reelle de redirection si le $url=true,
+ * l'url brute contenue dans le chapo sinon
+ *
+ * http://doc.spip.org/@chapo_redirige
+ *
+ * @param string $virtuel
+ * @param bool $url
+ * @return string
+ */
+function virtuel_redirige($virtuel, $url=false){
+	if (!strlen($virtuel)) return '';
+	if (!preg_match(_RACCOURCI_LIEN, $virtuel, $m))
+		if (!preg_match(_RACCOURCI_CHAPO, $virtuel, $m))
+			return $virtuel;
 
 	return !$url ? $m[3] : traiter_lien_implicite($m[3]);
 }
 
-// Ne pas afficher le chapo si article virtuel
-// http://doc.spip.org/@nettoyer_chapo
-function nettoyer_chapo($chapo){
-	return (substr($chapo,0,1) == "=") ? '' : $chapo;
-}
-
-// http://doc.spip.org/@chapo_redirigetil
-function chapo_redirigetil($chapo) { return $chapo && $chapo[0] == '=';}
 
 // Cherche un lien du type [->raccourci 123]
 // associe a une fonction generer_url_raccourci() definie explicitement 
@@ -339,12 +343,8 @@ function traiter_lien_explicite ($ref, $texte='', $pour='url', $connect='')
 	if (!$texte) {
 		$texte = str_replace('"', '', $lien);
 		// evite l'affichage de trops longues urls.
-		// personnalisation possible dans mes_options
-		$long_url = defined('_MAX_LONG_URL') ? _MAX_LONG_URL : 40;
-		$coupe_url = defined('_MAX_COUPE_URL') ? _MAX_COUPE_URL : 35;
-		if (strlen($texte)>$long_url) {
-			$texte = substr($texte,0,$coupe_url).'...';
-		}
+		$lien_court = charger_fonction('lien_court', 'inc');
+		$texte = $lien_court($texte);
 		$texte = "<html>".quote_amp($texte)."</html>";
 	}
 
@@ -370,17 +370,6 @@ function liens_implicite_glose_dist($texte,$id,$type,$args,$ancre,$connect=''){
 		$url = glossaire_std($texte);
 	return $url;
 }
-
-
-/* fonction valable pour SPIP 2.1 seulement [ en 2.3 elle est definie dans l'extension "Sites" ] // */
-function liens_implicite_site_dist($texte,$id,$type,$args,$ancre,$connect=''){
-	if (!$id = intval($id))
-		return false;
-	$url = sql_getfetsel('url_site', 'spip_syndic', "id_syndic=".intval($id),'','','','',$connect);
-	return $url;
-}
-/* fin exception spip 2.1 */
-
 
 // http://doc.spip.org/@traiter_lien_implicite
 function traiter_lien_implicite ($ref, $texte='', $pour='url', $connect='')
@@ -505,7 +494,7 @@ function traiter_modeles($texte, $doublons=false, $echap='', $connect='', $liens
 			}
 
 			// calculer le modele
-			# hack articles_edit, breves_edit, indexation
+			# hack indexation
 			if ($doublons)
 				$texte .= preg_replace(',[|][^|=]*,s',' ',$params);
 			# version normale

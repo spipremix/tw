@@ -336,8 +336,8 @@ function traiter_tableau($bloc) {
 		}
 
 		// ligne complete
-		$class = alterner($l+1, 'even', 'odd');
-		$html = "<tr class='row_$class'>$ligne</tr>\n$html";
+		$class = alterner($l+1, 'odd', 'even');
+		$html = "<tr class='row_$class $class'>$ligne</tr>\n$html";
 	}
 	return "\n\n<table".$GLOBALS['class_spip_plus'].$summary.">\n"
 		. $debut_table

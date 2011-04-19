@@ -371,9 +371,29 @@ function liens_implicite_glose_dist($texte,$id,$type,$args,$ancre,$connect=''){
 	return $url;
 }
 
-// http://doc.spip.org/@traiter_lien_implicite
+/**
+ * Transformer un lien raccourci art23 en son URL
+ * Par defaut la fonction produit une url prive si on est dans le prive
+ * ou publique si on est dans le public.
+ * La globale lien_implicite_cible_public permet de forcer un cas ou l'autre :
+ * $GLOBALS['lien_implicite_cible_public'] = true;
+ *  => tous les liens raccourcis pointent vers le public
+ * $GLOBALS['lien_implicite_cible_public'] = false;
+ *  => tous les liens raccourcis pointent vers le prive
+ * unset($GLOBALS['lien_implicite_cible_public']);
+ *  => retablit le comportement automatique
+ *
+ * http://doc.spip.org/@traiter_lien_implicite
+ *
+ * @param string $ref
+ * @param string $texte
+ * @param string $pour
+ * @param string $connect
+ * @return array|bool|string
+ */
 function traiter_lien_implicite ($ref, $texte='', $pour='url', $connect='')
 {
+	$cible = ($connect ? $connect : (isset($GLOBALS['lien_implicite_cible_public'])?$GLOBALS['lien_implicite_cible_public']:null));
 	if (!($match = typer_raccourci($ref))) return false;
 	@list($type,,$id,,$args,,$ancre) = $match;
 # attention dans le cas des sites le lien doit pointer non pas sur
@@ -381,11 +401,11 @@ function traiter_lien_implicite ($ref, $texte='', $pour='url', $connect='')
 	if ($f = charger_fonction("implicite_$type","liens",true))
 		$url = $f($texte,$id,$type,$args,$ancre,$connect);
 	if (!$url)
-		$url = generer_url_entite($id,$type,$args,$ancre,$connect ? $connect : NULL);
+		$url = generer_url_entite($id,$type,$args,$ancre,$cible);
 	if (!$url) return false;
 	if (is_array($url)) {
 		@list($type,$id) = $url;
-		$url = generer_url_entite($id,$type,$args,$ancre,$connect ? $connect : NULL);
+		$url = generer_url_entite($id,$type,$args,$ancre,$cible);
 	}
 	if ($pour === 'url') return $url;
 	$r = traiter_raccourci_titre($id, $type, $connect);

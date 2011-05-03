@@ -8,7 +8,7 @@
 	<description>Integrer TextWheel dans SPIP</description>
 	<prefix>tw</prefix>
 	<categorie>outil</categorie>
-	<necessite id="SPIP" version="[2.3.0-dev;]" />
+	<necessite id="SPIP" version="[3.0.0-dev;]" />
 	<utilise id="yaml" version="[1.3;]" />
 	<utilise id="memoization" version="[0.9;]" />
 </plugin>

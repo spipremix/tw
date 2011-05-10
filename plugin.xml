@@ -5,7 +5,7 @@
 	<licence>GNU/GPL</licence>
 	<version>0.4.1</version>
 	<etat>test</etat>
-	<description>Integrer TextWheel dans SPIP</description>
+	<description>Int&eacute;grer TextWheel dans SPIP</description>
 	<prefix>tw</prefix>
 	<categorie>outil</categorie>
 	<necessite id="SPIP" version="[3.0.0-dev;]" />

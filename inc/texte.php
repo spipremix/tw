@@ -237,7 +237,7 @@ function traiter_tableau($bloc) {
 					  }
 					  // inutile de garder le strong qui n'a servi que de marqueur 
 					  $cols[$c] = str_replace(array('{','}'), '', $cols[$c]);
-					  $ligne= "<th id='id{$tabid}_c$c' $attr>$cols[$c]</th>$ligne";
+					  $ligne= "<th id='id{$tabid}_c$c'$attr>$cols[$c]</th>$ligne";
 						$hc[$c] = "id{$tabid}_c$c"; // pour mettre dans les headers des td
 					}
 				}

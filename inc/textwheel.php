@@ -66,7 +66,9 @@ class SPIPTextWheelRuleset extends TextWheelRuleSet {
 	public static function &loader($ruleset, $callback = '', $class = 'SPIPTextWheelRuleset') {
 
 		# memoization
-		$key = 'tw-'.md5(serialize($ruleset).$callback.$class);
+		# attention : le ruleset peut contenir apres loading des chemins relatifs
+		# il faut donc que le cache depende du chemin courant vers la racine de SPIP
+		$key = 'tw-'.md5(serialize($ruleset).$callback.$class._DIR_RACINE);
 
 		# lecture du cache
 		include_spip('inc/memoization');

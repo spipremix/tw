@@ -44,6 +44,10 @@ $GLOBALS['spip_wheels']['echappe_js'] = array(
 	'spip/echappe-js.yaml'
 );
 
+$GLOBALS['spip_wheels']['paragrapher'][] = array(
+	'spip/spip-paragrapher.yaml'
+);
+
 //
 // Methode de chargement d'une wheel SPIP
 //

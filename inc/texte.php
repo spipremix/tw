@@ -44,6 +44,20 @@ function echappe_js($t) {
 	return $wheel->text($t);
 }
 
+//
+// paragagrapher seulement
+//
+function paragrapher($t) {
+	static $wheel = null;
+
+	if (!isset($wheel))
+		$wheel = new TextWheel(
+			SPIPTextWheelRuleset::loader($GLOBALS['spip_wheels']['paragrapher'])
+		);
+
+	return $wheel->text($t);
+}
+
 
 // Securite : empecher l'execution de code PHP, en le transformant en joli code
 // dans l'espace prive, cette fonction est aussi appelee par propre et typo

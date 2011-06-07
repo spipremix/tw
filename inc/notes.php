@@ -15,6 +15,11 @@ if (!defined("_ECRIRE_INC_VERSION")) return;
 //
 // Notes de bas de page
 //
+if (!defined('_NOTES_OUVRE_REF')) define('_NOTES_OUVRE_REF','<span class="spip_note_ref">&nbsp;[');
+if (!defined('_NOTES_FERME_REF')) define('_NOTES_FERME_REF',']</span>');
+if (!defined('_NOTES_OUVRE_NOTE')) define('_NOTES_OUVRE_NOTE','<span class="spip_note_ref">[');
+if (!defined('_NOTES_FERME_NOTE')) define('_NOTES_FERME_NOTE',']</span>');
+if (!defined('_NOTES_RACCOURCI')) define('_NOTES_RACCOURCI', ',\[\[(\s*(<([^>\'"]*)>)?(.*?))\]\],msS');
 
 // argument = true: empiler l'etat courant, initialiser un nouvel etat
 // argument = false: restaurer l'etat precedent, denonce un etat courant perdu
@@ -92,15 +97,13 @@ function inc_notes_dist($arg,$operation='traiter')
 	}
 }
 
-define('_RACCOURCI_NOTES', ',\[\[(\s*(<([^>\'"]*)>)?(.*?))\]\],msS');
 
 function traiter_raccourci_notes($letexte, $marqueur_notes)
 {
-	global $compt_note,   $les_notes, $notes_vues;
-	global $ouvre_ref, $ferme_ref;
+	global $compt_note, $notes_vues;
 
 	if (strpos($letexte, '[[') === false
-	OR !preg_match_all(_RACCOURCI_NOTES, $letexte, $m, PREG_SET_ORDER))
+	OR !preg_match_all(_NOTES_RACCOURCI, $letexte, $m, PREG_SET_ORDER))
 		return array($letexte, array());
 
 	// quand il y a plusieurs series de notes sur une meme page
@@ -139,7 +142,7 @@ function traiter_raccourci_notes($letexte, $marqueur_notes)
 		}
 
 		// dans le texte, mettre l'appel de note a la place de la note
-		if ($nom) $nom = "$ouvre_ref<a href='#nb$ancre' class='spip_note' rel='footnote'$title$att>$nom</a>$ferme_ref";
+		if ($nom) $nom = _NOTES_OUVRE_REF."<a href='#nb$ancre' class='spip_note' rel='footnote'$title$att>$nom</a>"._NOTES_FERME_REF;
 
 		$pos = strpos($letexte, $note_source);
 		$letexte = rtrim(substr($letexte, 0, $pos), ' ')
@@ -153,8 +156,6 @@ function traiter_raccourci_notes($letexte, $marqueur_notes)
 
 // http://doc.spip.org/@traiter_les_notes
 function traiter_les_notes($notes) {
-	global $ouvre_note, $ferme_note;
-
 	$mes_notes = '';
 	if ($notes) {
 		$title =  _T('info_notes');
@@ -164,7 +165,7 @@ function traiter_les_notes($notes) {
 			$mes_notes .= "\n\n"
 			. "<div id='nb$ancre'><p". ($GLOBALS['class_spip'] ? " class='spip_note'" : "") .">"
 			. code_echappement($nom
-				? "$ouvre_note<a".$atts.">$nom</a>$ferme_note"
+				? _NOTES_OUVRE_NOTE."<a".$atts.">$nom</a>"._NOTES_FERME_NOTE
 				: '')
 			. $texte
 			.'</div>';

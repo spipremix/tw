@@ -47,15 +47,22 @@ function echappe_js($t) {
 //
 // paragagrapher seulement
 //
-function paragrapher($t) {
-	static $wheel = null;
+function paragrapher($t, $toujours_paragrapher = null) {
+	static $wheel = array();
+	if (is_null($toujours_paragrapher))
+		$toujours_paragrapher = $GLOBALS['toujours_paragrapher'];
 
-	if (!isset($wheel))
-		$wheel = new TextWheel(
-			SPIPTextWheelRuleset::loader($GLOBALS['spip_wheels']['paragrapher'])
-		);
+	if (!isset($wheel[$toujours_paragrapher])) {
+		$ruleset = SPIPTextWheelRuleset::loader($GLOBALS['spip_wheels']['paragrapher']);
+		if (!$toujours_paragrapher
+		  AND $rule=$ruleset->getRule('toujours-paragrapher')) {
+			$rule->disabled = true;
+			$ruleset->addRules(array('toujours-paragrapher'=>$rule));
+		}
+		$wheel[$toujours_paragrapher] = new TextWheel($ruleset);
+	}
 
-	return $wheel->text($t);
+	return $wheel[$toujours_paragrapher]->text($t);
 }
 
 

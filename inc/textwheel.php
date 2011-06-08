@@ -44,7 +44,7 @@ $GLOBALS['spip_wheels']['echappe_js'] = array(
 	'spip/echappe-js.yaml'
 );
 
-$GLOBALS['spip_wheels']['paragrapher'][] = array(
+$GLOBALS['spip_wheels']['paragrapher'] = array(
 	'spip/spip-paragrapher.yaml'
 );
 
@@ -77,8 +77,8 @@ class SPIPTextWheelRuleset extends TextWheelRuleSet {
 		# lecture du cache
 		include_spip('inc/memoization');
 		if (!function_exists('cache_get')) include_spip('inc/memoization-mini');
-		if (!_request('var_mode')
-		AND $cacheruleset = cache_get($key))
+		if (!defined('_VAR_MODE')
+		  AND $cacheruleset = cache_get($key))
 			return $cacheruleset;
 
 		# calcul de la wheel

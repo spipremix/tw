@@ -11,7 +11,7 @@ toujours-paragrapher:
     # Ajouter un <p> au debut pour assurer d'avoir toujours un paragraphe
     # anuler cette regle pour revenir a l'ancien comportement de SPIP
     type: all
-    replace: "<p>BOUH$0"
+    replace: "<p>$0"
 
 toujours-ouvrir:
     # toujours ouvrir un parapgraphe derriere une balise bloc fermante

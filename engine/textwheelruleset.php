@@ -29,7 +29,7 @@ abstract class TextWheelDataSet {
 	 * path find method
 	 *
 	 * @param string $file
-	 * @param string $default_path
+	 * @param string $path
 	 * @return string
 	 */
 	protected function findFile(&$file, $path=''){
@@ -55,6 +55,7 @@ abstract class TextWheelDataSet {
 	/**
 	 * Load a yaml file describing data
 	 * @param string $file
+	 * @param string $default_path
 	 * @return array
 	 */
 	protected function loadFile(&$file, $default_path='') {
@@ -94,7 +95,8 @@ class TextWheelRuleSet extends TextWheelDataSet {
 	/**
 	 * Constructor
 	 *
-	 * @param array/string $ruleset
+	 * @param array|string $ruleset
+	 * @param string $filepath
 	 */
 	public function TextWheelRuleSet($ruleset = array(), $filepath='') {
 		if ($ruleset)
@@ -160,7 +162,8 @@ class TextWheelRuleSet extends TextWheelDataSet {
 	 * - a string filename
 	 * - an array of string filename
 	 *
-	 * @param array/string $rules
+	 * @param array|string $rules
+	 * @param string $filepath
 	 */
 	public function addRules($rules, $filepath='') {
 		// rules can be an array of filename

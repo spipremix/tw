@@ -19,6 +19,8 @@ include_spip('inc/textwheel');
 
 // Avec cette surcharge, cette globale n'est plus définie, et du coup ça plante dans les plugins qui font un foreach dessus comme ZPIP
 $GLOBALS['spip_raccourcis_typo'] = array();
+if (!isset($GLOBALS['toujours_paragrapher']))
+	$GLOBALS['toujours_paragrapher'] = true;
 
 // class_spip : savoir si on veut class="spip" sur p i strong & li
 // class_spip_plus : class="spip" sur les ul ol h3 hr quote table...

@@ -3,7 +3,7 @@
 	<auteur>Collectif SPIP</auteur>
 	<icon>textwheel-64.png</icon>
 	<licence>GNU/GPL</licence>
-	<version>0.4.3</version>
+	<version>0.4.4</version>
 	<etat>test</etat>
 	<description>Int&eacute;grer TextWheel dans SPIP</description>
 	<prefix>tw</prefix>

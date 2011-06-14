@@ -165,6 +165,7 @@ define('_TYPO_BALISE', ",</?[a-z!][^<>]*[".preg_quote(_TYPO_PROTEGER)."][^<>]*>,
 
 // http://doc.spip.org/@corriger_typo
 function corriger_typo($t, $lang='') {
+	static $typographie = array();
 	// Plus vite !
 	if (!$t) return $t;
 
@@ -189,8 +190,10 @@ function corriger_typo($t, $lang='') {
 	$e = ($e === $t);
 
 	// Charger & appliquer les fonctions de typographie
-	$typographie = charger_fonction(lang_typo($lang), 'typographie');
-	$t = $typographie($t);
+	$idxl = "$lang:" . (isset($GLOBALS['lang_objet'])? $GLOBALS['lang_objet']: $GLOBALS['spip_lang']);
+	if (!isset($typographie[$idxl]))
+		$typographie[$idxl] = charger_fonction(lang_typo($lang), 'typographie');
+	$t = $typographie[$idxl]($t);
 
 	// Les citations en une autre langue, s'il y a lieu
 	if (!$e) $t = echappe_retour($t, 'multi');
@@ -528,7 +531,7 @@ function personnaliser_raccourcis(&$ruleset){
 
 // http://doc.spip.org/@traiter_raccourcis
 function traiter_raccourcis($t) {
-	static $wheel;
+	static $wheel, $notes;
 	// Appeler les fonctions de pre_traitement
 	$t = pipeline('pre_propre', $t);
 
@@ -544,10 +547,10 @@ function traiter_raccourcis($t) {
 			echo "<pre>\n".htmlspecialchars($f)."</pre>\n";
 			exit;
 		}
+		$notes = charger_fonction('notes', 'inc');
 	}
 
 	// Gerer les notes (ne passe pas dans le pipeline)
-	$notes = charger_fonction('notes', 'inc');
 	list($t, $mes_notes) = $notes($t);
 
 	$t = $wheel->text($t);

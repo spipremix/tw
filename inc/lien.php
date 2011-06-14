@@ -346,8 +346,10 @@ function traiter_lien_explicite ($ref, $texte='', $pour='url', $connect='')
 	// Liens explicites
 	if (!$texte) {
 		$texte = str_replace('"', '', $lien);
+		static $lien_court;
 		// evite l'affichage de trops longues urls.
-		$lien_court = charger_fonction('lien_court', 'inc');
+		if (!$lien_court)
+			$lien_court = charger_fonction('lien_court', 'inc');
 		$texte = $lien_court($texte);
 		$texte = "<html>".quote_amp($texte)."</html>";
 	}

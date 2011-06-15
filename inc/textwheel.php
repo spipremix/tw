@@ -92,4 +92,10 @@ class SPIPTextWheelRuleset extends TextWheelRuleSet {
 }
 
 
+function textwheel_trig_purger($quoi){
+	if ($quoi=='cache')
+		purger_repertoire(_DIR_CACHE."wheels");
+	return $quoi;
+}
+
 ?>

@@ -3,12 +3,16 @@
 	<auteur>Collectif SPIP</auteur>
 	<icon>textwheel-64.png</icon>
 	<licence>GNU/GPL</licence>
-	<version>0.4.4</version>
+	<version>0.4.5</version>
 	<etat>test</etat>
 	<slogan>Gestion de la typographie SPIP avec TextWheel</slogan>
 	<description>Int&eacute;grer TextWheel dans SPIP</description>
 	<prefix>tw</prefix>
 	<categorie>outil</categorie>
+	<pipeline>
+		<nom>trig_purger</nom>
+		<inclure>inc/textwheel.php</inclure>
+	</pipeline>
 	<necessite id="SPIP" version="[3.0.0-dev;]" />
 	<utilise id="yaml" version="[1.3;]" />
 	<utilise id="memoization" version="[0.9;]" />

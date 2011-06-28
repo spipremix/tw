@@ -3,7 +3,7 @@
 	<auteur>Collectif SPIP</auteur>
 	<icon>textwheel-64.png</icon>
 	<licence>GNU/GPL</licence>
-	<version>0.4.5</version>
+	<version>0.4.6</version>
 	<etat>test</etat>
 	<slogan>Gestion de la typographie SPIP avec TextWheel</slogan>
 	<description>Int&eacute;grer TextWheel dans SPIP</description>

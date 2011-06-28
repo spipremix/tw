@@ -536,23 +536,10 @@ function traiter_modeles($texte, $doublons=false, $echap='', $connect='', $liens
 				// si l'objet demande a une url, 
 				// creer un petit encadre vers elle
 				if ($modele === false) {
-					if (!$lien)
-						$lien = traiter_lien_implicite("$type$id", '', 'tout', $connect);
-					if ($lien)
-						$modele = '<a href="'
-						  .$lien['url']
-						  .'" class="spip_modele'
-						  . '">'
-						  .sinon($lien['titre'], _T('ecrire:info_sans_titre'))
-						  ."</a>";
-					else {
-						$modele = "";
-						if (test_espace_prive()) {
-							$modele = entites_html(substr($texte,$a,$cherche));
-							if (!is_null($liens))
-								$modele = "<pre>".str_replace($liens[0], $liens[1], $modele)."</pre>";
-						}
-					}
+					$modele = substr($texte,$a,$cherche);
+					if (!is_null($liens))
+						$modele = str_replace($liens[0], $liens[1], $modele);
+					$modele = recuperer_fond("modeles/dist", array('id'=>$id,'type'=>$type,'modele'=>$modele), $lien, $connect);
 				}
 				// le remplacer dans le texte
 				if ($modele !== false) {

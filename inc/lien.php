@@ -79,7 +79,9 @@ function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='
 		$rel = trim("$rel external");
 	if ($rel) $rel = " rel='$rel'";
 
-	if (traiter_modeles($texte, false, $echapper ? 'TYPO' : '', $connect)==$texte){
+	// si pas de modele dans le texte du lien, on peut juste passer typo sur le texte, c'est plus rapide
+	// les rares cas de lien qui encapsule un modele passe en dessous, c'est plus lent
+	if (traiter_modeles($texte, false, '', $connect)==$texte){
 		$texte = typo($texte, true, $connect);
 		$lien = "<a href=\"".str_replace('"', '&quot;', $lien)."\" class='$class'$lang$title$rel$mime>$texte</a>";
 		return $lien;

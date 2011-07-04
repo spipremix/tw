@@ -164,7 +164,7 @@ br-restant:
 poesie:
   # poesie|poetry
   # utilise une callback
-  match: ",<poe(sie|try)>(.*)</poe$1>,UimsS"
+  match: ",<poe(sie|try)>(.*)</poe(sie|try)>,UimsS"
   replace: spip/spip-poesie.yaml
   pick_match: 2
   is_wheel: Y

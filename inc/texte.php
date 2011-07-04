@@ -462,23 +462,6 @@ function traiter_listes ($texte) {
 	return substr($texte, 0, -2);
 }
 
-// http://doc.spip.org/@traiter_poesie
-function traiter_poesie($letexte)
-{
-	if (preg_match_all(",<(poesie|poetry)>(.*)<\/(poesie|poetry)>,UimsS",
-	$letexte, $regs, PREG_SET_ORDER)) {
-		$u = "/\n[\s]*\n/S" . $GLOBALS['meta']['pcre_u'];
-		foreach ($regs as $reg) {
-			$lecode = preg_replace(",\r\n?,S", "\n", $reg[2]);
-			$lecode = preg_replace($u, "\n&nbsp;\n",$lecode);
-			$lecode = "<blockquote class=\"spip_poesie\">\n<div>"
-				.preg_replace("/\n+/", "</div>\n<div>", trim($lecode))
-				."</div>\n</blockquote>\n\n";
-			$letexte = str_replace($reg[0], $lecode, $letexte);
-		}
-	}
-	return $letexte;
-}
 
 // Harmonise les retours chariots et mange les paragraphes html
 // http://doc.spip.org/@traiter_retours_chariots

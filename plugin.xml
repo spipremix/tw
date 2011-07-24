@@ -1,7 +1,7 @@
 <plugin>
 	<nom>TextWheel pour SPIP</nom>
 	<auteur>Collectif SPIP</auteur>
-	<icon>textwheel-64.png</icon>
+	<icon>textwheel-32.png</icon>
 	<licence>GNU/GPL</licence>
 	<version>0.5.0</version>
 	<etat>test</etat>

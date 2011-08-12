@@ -477,12 +477,15 @@ function traiter_raccourci_titre($id, $type, $connect=NULL)
 // Si $doublons==true, on repere les documents sans calculer les modeles
 // mais on renvoie les params (pour l'indexation par le moteur de recherche)
 // http://doc.spip.org/@traiter_modeles
+define('_PREG_MODELE',
+	'(<([a-z_-]{3,})' # <modele
+ .'\s*([0-9]*)\s*' # id
+ .'([|](?:<[^<>]*>|[^>])*?)?' # |arguments (y compris des tags <...>)
+ .'\s*/?'.'>)' # fin du modele >
+);
 
-define('_RACCOURCI_MODELE', 
-	 '(<([a-z_-]{3,})' # <modele
-	.'\s*([0-9]*)\s*' # id
-	.'([|](?:<[^<>]*>|[^>])*?)?' # |arguments (y compris des tags <...>)
-	.'\s*/?'.'>)' # fin du modele >
+define('_RACCOURCI_MODELE',
+	_PREG_MODELE
 	.'\s*(<\/a>)?' # eventuel </a>
        );
 

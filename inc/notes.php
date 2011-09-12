@@ -18,7 +18,7 @@ if (!defined("_ECRIRE_INC_VERSION")) return;
 if (!defined('_NOTES_OUVRE_REF')) define('_NOTES_OUVRE_REF','<span class="spip_note_ref">&nbsp;[');
 if (!defined('_NOTES_FERME_REF')) define('_NOTES_FERME_REF',']</span>');
 if (!defined('_NOTES_OUVRE_NOTE')) define('_NOTES_OUVRE_NOTE','<span class="spip_note_ref">[');
-if (!defined('_NOTES_FERME_NOTE')) define('_NOTES_FERME_NOTE',']</span>');
+if (!defined('_NOTES_FERME_NOTE')) define('_NOTES_FERME_NOTE',']&nbsp;</span>');
 if (!defined('_NOTES_RACCOURCI')) define('_NOTES_RACCOURCI', ',\[\[(\s*(<([^>\'"]*)>)?(.*?))\]\],msS');
 
 // argument = true: empiler l'etat courant, initialiser un nouvel etat

@@ -1,5 +1,5 @@
 #SET{lien,#ENV{id}|generer_url_entite{#ENV{type}}}
-[<a href="(#GET{lien})" class="spip_modele defaut">[(#INFO_TITRE{#ENV{type},#ENV{id}}|sinon{[(#ENV{type}|objet_info{texte_objet}|_T) #ENV{id}]})]</a>]
+[<a href="(#GET{lien})" class="spip_modele defaut">[(#INFO_TITRE{#ENV{type},#ENV{id}}|sinon{[(#ENV{type}|objet_info{texte_objet}|sinon{#ENV{type}}|_T) #ENV{id}]})]</a>]
 [(#GET{lien}|non|et{#REM|test_espace_prive})
 <pre>[(#ENV*{modele}|entites_html)]</pre>
 ]

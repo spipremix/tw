@@ -1,5 +1,7 @@
 <?php
 
+if (!defined('_ECRIRE_INC_VERSION')) return;
+
 /**
  * callback fermer-para-mano
  * on refait le preg, a la main

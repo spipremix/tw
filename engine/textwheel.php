@@ -18,6 +18,8 @@
  *
  */
 
+if (!defined('_ECRIRE_INC_VERSION')) return;
+
 require_once dirname(__FILE__)."/textwheelruleset.php";
 
 class TextWheel {

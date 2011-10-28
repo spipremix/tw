@@ -112,7 +112,7 @@ function interdire_scripts($arg) {
 // avec protection prealable des balises HTML et SPIP
 
 // http://doc.spip.org/@typo
-function typo($letexte, $echapper=true, $connect=null) {
+function typo($letexte, $echapper=true, $connect=null, $env=array()) {
 	// Plus vite !
 	if (!$letexte) return $letexte;
 
@@ -138,7 +138,7 @@ function typo($letexte, $echapper=true, $connect=null) {
 	// NOTE : propre() ne passe pas par ici mais directement par corriger_typo
 	// cf. inc/lien
 
-	$letexte = traiter_modeles($mem = $letexte, false, $echapper ? 'TYPO' : '', $connect);
+	$letexte = traiter_modeles($mem = $letexte, false, $echapper ? 'TYPO' : '', $connect, null, $env);
 	if ($letexte != $mem) $echapper = true;
 	unset($mem);
 
@@ -541,7 +541,7 @@ function traiter_raccourcis($t) {
 
 // Filtre a appliquer aux champs du type #TEXTE*
 // http://doc.spip.org/@propre
-function propre($t, $connect=null) {
+function propre($t, $connect=null, $env=array()) {
 	// les appels directs a cette fonction depuis le php de l'espace
 	// prive etant historiquement ecrits sans argment $connect
 	// on utilise la presence de celui-ci pour distinguer les cas
@@ -557,7 +557,7 @@ function propre($t, $connect=null) {
 	if (!$t) return strval($t);
 
 	$t = echappe_html($t);
-	$t = expanser_liens($t,$connect);
+	$t = expanser_liens($t,$connect, $env);
 	$t = traiter_raccourcis($t);
 	$t = echappe_retour_modeles($t, $interdire_script);
 

@@ -20,7 +20,7 @@ include_spip('base/abstract_sql');
 // et en plus on veut pouvoir les passer en pipeline
 //
 
-function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='', $connect='') {
+function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='', $connect='', $env=array()) {
 	static $u=null;
 	if (!$u) $u=url_de_base();
 	$typo = false;
@@ -81,8 +81,8 @@ function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='
 
 	// si pas de modele dans le texte du lien, on peut juste passer typo sur le texte, c'est plus rapide
 	// les rares cas de lien qui encapsule un modele passe en dessous, c'est plus lent
-	if (traiter_modeles($texte, false, '', $connect)==$texte){
-		$texte = typo($texte, true, $connect);
+	if (traiter_modeles($texte, false, '', $connect, null, $env)==$texte){
+		$texte = typo($texte, true, $connect, $env);
 		$lien = "<a href=\"".str_replace('"', '&quot;', $lien)."\" class='$class'$lang$title$rel$mime>$texte</a>";
 		return $lien;
 	}
@@ -91,7 +91,7 @@ function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='
 	# celui retourne par calculer_url.
 	# Penser au cas [<imgXX|right>->URL], qui exige typo('<a>...</a>')
 	$lien = "<a href=\"".str_replace('"', '&quot;', $lien)."\" class='$class'$lang$title$rel$mime>$texte</a>";
-	return typo($lien, true, $connect);
+	return typo($lien, true, $connect, $env);
 }
 
 // Regexp des raccourcis, aussi utilisee pour la fusion de sauvegarde Spip
@@ -101,19 +101,19 @@ function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='
 define('_RACCOURCI_LIEN', "/\[([^][]*?([[]\w*[]][^][]*)*)->(>?)([^]]*)\]/msS");
 
 // http://doc.spip.org/@expanser_liens
-function expanser_liens($t, $connect='')
+function expanser_liens($t, $connect='', $env=array())
 {
 
 	$t = pipeline('pre_liens', $t);
 
-	expanser_un_lien($connect,'init');
+	expanser_un_lien($connect,'init', $env);
 
 	if (strpos($t, '->') !== false)
 		$t = preg_replace_callback (_RACCOURCI_LIEN, 'expanser_un_lien',$t);
 
 	// on passe a traiter_modeles la liste des liens reperes pour lui permettre
 	// de remettre le texte d'origine dans les parametres du modele
-	$t = traiter_modeles($t, false, false, $connect, expanser_un_lien('','sources'));
+	$t = traiter_modeles($t, false, false, $connect, expanser_un_lien('','sources'), $env);
 
  	$t = corriger_typo($t);
 
@@ -123,7 +123,7 @@ function expanser_liens($t, $connect='')
 }
 
 
-function expanser_un_lien($reg, $quoi='echappe'){
+function expanser_un_lien($reg, $quoi='echappe', $env=null){
 	static $pile = array();
 	static $inserts;
 	static $sources;
@@ -131,10 +131,13 @@ function expanser_un_lien($reg, $quoi='echappe'){
 	static $k = 0;
 	static $lien;
 	static $connect='';
+	static $contexte = array();
 
 	switch ($quoi){
 		case 'init':
 			if (!$lien) $lien = charger_fonction('lien', 'inc');
+			if (!is_null($env))
+				$contexte = $env;
 			array_push($pile,array($inserts,$sources,$regs,$connect,$k));
 			$inserts = $sources = $regs = array();
 			$connect = $reg; // stocker le $connect pour les appels a inc_lien_dist
@@ -158,7 +161,7 @@ function expanser_un_lien($reg, $quoi='echappe'){
 				// et prenons le href comme la vraie url a linker
 				$r = $href;
 			}
-			$regs[$k] = $lien($r, $titre, '', $bulle, $hlang, '', $connect);
+			$regs[$k] = $lien($r, $titre, '', $bulle, $hlang, '', $connect, $contexte);
 			return $inserts[$k++];
 			break;
 		case 'reinsert':
@@ -495,7 +498,7 @@ define('_RACCOURCI_MODELE',
 define('_RACCOURCI_MODELE_DEBUT', '@^' . _RACCOURCI_MODELE .'@isS');
 
 // http://doc.spip.org/@traiter_modeles
-function traiter_modeles($texte, $doublons=false, $echap='', $connect='', $liens = null) {
+function traiter_modeles($texte, $doublons=false, $echap='', $connect='', $liens = null, $env = array()) {
 	// preserver la compatibilite : true = recherche des documents
 	if ($doublons===true)
 		$doublons = array('documents'=>array('doc','emb','img'));
@@ -537,7 +540,7 @@ function traiter_modeles($texte, $doublons=false, $echap='', $connect='', $liens
 				// dans les parametres, plutot que les liens echappes
 				if (!is_null($liens))
 					$params = str_replace($liens[0], $liens[1], $params);
-			  $modele = inclure_modele($type, $id, $params, $lien, $connect);
+			  $modele = inclure_modele($type, $id, $params, $lien, $connect, $env);
 				// en cas d'echec, 
 				// si l'objet demande a une url, 
 				// creer un petit encadre vers elle
@@ -545,7 +548,14 @@ function traiter_modeles($texte, $doublons=false, $echap='', $connect='', $liens
 					$modele = substr($texte,$a,$cherche);
 					if (!is_null($liens))
 						$modele = str_replace($liens[0], $liens[1], $modele);
-					$modele = recuperer_fond("modeles/dist", array('id'=>$id,'type'=>$type,'modele'=>$modele), $lien, $connect);
+					$contexte = array_merge($env,array('id'=>$id,'type'=>$type,'modele'=>$modele));
+					if ($lien) {
+						# un eventuel guillemet (") sera reechappe par #ENV
+						$contexte['lien'] = str_replace("&quot;",'"', $lien['href']);
+						$contexte['lien_class'] = $lien['class'];
+						$contexte['lien_mime'] = $lien['mime'];
+					}
+					$modele = recuperer_fond("modeles/dist", $contexte, array(), $connect);
 				}
 				// le remplacer dans le texte
 				if ($modele !== false) {

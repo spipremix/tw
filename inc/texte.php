@@ -558,9 +558,10 @@ function propre($t, $connect=null, $env=array()) {
 
 	$t = echappe_html($t);
 	$t = expanser_liens($t,$connect, $env);
+	
 	$t = traiter_raccourcis($t);
 	$t = echappe_retour_modeles($t, $interdire_script);
-
+	
 	return $t;
 }
 ?>

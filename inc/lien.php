@@ -115,8 +115,6 @@ function expanser_liens($t, $connect='', $env=array())
 	// de remettre le texte d'origine dans les parametres du modele
 	$t = traiter_modeles($t, false, false, $connect, expanser_un_lien('','sources'), $env);
 
- 	$t = corriger_typo($t);
-
 	$t = expanser_un_lien($t,'reinsert');
 
 	return $t;

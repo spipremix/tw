@@ -285,7 +285,7 @@ function traiter_autoliens($r) {
 	$r = inserer_attribut($r, 'class', trim(extraire_attribut($r,'class').' auto'));
 
 	// si l'original ne contenait pas le 'http:' on le supprime du clic
-	return $m ? $r : str_replace('>http://', '>', $r);
+	return "<html>".($m ? $r : str_replace('>http://', '>', $r))."</html>";
 }
 
 define('_EXTRAIRE_LIENS', ',' . '\[[^\[\]]*(?:<-|->).*?\]' . '|<a\b.*?</a\b' . '|<\w.*?>' . '|((?:https?:/|www\.)[^"\'\s\[\]\}\)<>]*)' .',imsS');
@@ -293,7 +293,11 @@ define('_EXTRAIRE_LIENS', ',' . '\[[^\[\]]*(?:<-|->).*?\]' . '|<a\b.*?</a\b' . '
 // Les URLs brutes sont converties en <a href='url'>url</a>
 // http://doc.spip.org/@traiter_raccourci_liens
 function traiter_raccourci_liens($t) {
-	return preg_replace_callback(_EXTRAIRE_LIENS, 'traiter_autoliens', $t);
+	$t = preg_replace_callback(_EXTRAIRE_LIENS, 'traiter_autoliens', $t);
+	// echapper les autoliens eventuellement inseres (en une seule fois)
+	if (strpos($t,"<html>")!==false)
+		$t = echappe_html($t);
+	return $t;
 }
 
 

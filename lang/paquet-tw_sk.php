@@ -9,7 +9,7 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 
 	// T
 	'tw_description' => 'Integrovať TextWheel do SPIPu',
-	'tw_slogan' => 'Správa typografie SPIPu s modulom TextWheel'
+	'tw_slogan' => 'Správa typografie SPIPu s modulom TextWheel'
 );
 
 ?>

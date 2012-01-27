@@ -279,13 +279,15 @@ function traiter_autoliens($r) {
 	preg_match('/^(.*?)([,.;?]?)$/', $l, $k);
 	$url = $protocol.'://'.$k[1];
 	$lien = charger_fonction('lien', 'inc');
-	$r = $lien($url,'','','','','nofollow') . $k[2];
+	// deux fois <html> car inc_lien echappe un coup et restaure ensuite
+	// => un perd 1 <html>
+	$r = $lien($url,"<html><html>$url</html></html>",'','','','nofollow') . $k[2];
 
 	// ajouter la class auto
 	$r = inserer_attribut($r, 'class', trim(extraire_attribut($r,'class').' auto'));
 
 	// si l'original ne contenait pas le 'http:' on le supprime du clic
-	return "<html>".($m ? $r : str_replace('>http://', '>', $r))."</html>";
+	return ($m ? $r : str_replace('>http://', '>', $r));
 }
 
 define('_EXTRAIRE_LIENS', ',' . '\[[^\[\]]*(?:<-|->).*?\]' . '|<a\b.*?</a\b' . '|<\w.*?>' . '|((?:https?:/|www\.)[^"\'\s\[\]\}\)<>]*)' .',imsS');

@@ -22,7 +22,7 @@ toujours-ouvrir:
 ajouter-stop-p1:
     # Ajouter un espace aux <p> et un "STOP P"
     # transformer aussi les </p> existants en <p>, nettoyes ensuite
-    if_str: "<"
+    if_str: "<p>"
     #if_match: ",<p\b,iS"
     match: "/^.*$/msS"
     replace: "<p>$0<STOP P>"

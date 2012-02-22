@@ -184,6 +184,7 @@ function nettoyer_raccourcis_typo($texte, $connect='')
 	$texte = pipeline('nettoyer_raccourcis_typo',$texte);
 
 	if (preg_match_all(_RACCOURCI_LIEN, $texte, $regs, PREG_SET_ORDER))
+		include_spip('inc/texte');
 		foreach ($regs as $reg) {
 			list ($titre,,)= traiter_raccourci_lien_atts($reg[1]);
 			if (!$titre) {

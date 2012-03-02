@@ -19,12 +19,17 @@ function fermer_para_mano(&$t) {
 			",</?(?:stop p|div|pre|ul|ol|li|blockquote|h[1-6r]|t(able|[rdh]|head|body|foot|extarea)|form|object|center|marquee|address|applet|iframe|d[ltd]|script|noscript|map|button|fieldset|style)\b,S",
 			$pi, $r)) {
 				$pos = strpos($pi, $r[0]);
-				$t .= "<p ".rtrim(substr($p,0,$pos))."</p>\n".substr($p,$pos);
+				$t .= "\n<p ".str_replace("\n", _AUTOBR."\n", rtrim(substr($p,0,$pos)))."</p>\n".substr($p,$pos);
 			} else {
 				$t .= '<p '.$p;
 			}
 		}
 	}
+
+	$t = str_replace(_AUTOBR."\n"."<br", "<br", $t); #manque /i
+	$reg = ',(<br\b[^>]*>\s*)'.preg_quote(_AUTOBR."\n", ',').",iS";
+
+	$t = preg_replace($reg, "\1", $t);
 
 	return $t;
 }

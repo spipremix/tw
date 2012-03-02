@@ -17,6 +17,10 @@ include_spip('inc/lien');
 
 include_spip('inc/textwheel');
 
+
+defined('_AUTOBR')||define('_AUTOBR', "<br class='autobr' />");
+define('_AUTOBR_IGNORER', "<!-- ig br -->");
+
 // Avec cette surcharge, cette globale n'est plus définie, et du coup ça plante dans les plugins qui font un foreach dessus comme ZPIP
 $GLOBALS['spip_raccourcis_typo'] = array();
 if (!isset($GLOBALS['toujours_paragrapher']))
@@ -47,7 +51,7 @@ function echappe_js($t) {
 }
 
 //
-// paragagrapher seulement
+// paragrapher seulement
 //
 function paragrapher($t, $toujours_paragrapher = null) {
 	static $wheel = array();
@@ -80,8 +84,7 @@ function interdire_scripts($arg) {
 	static $wheel = null;
 
 	// Attention, si ce n'est pas une chaine, laisser intact
-	if (!$arg OR !is_string($arg) OR !strstr($arg, '<')) return $arg; 
-
+	if (!$arg OR !is_string($arg) OR !strstr($arg, '<')) return $arg;
 	if (isset($dejavu[$GLOBALS['filtrer_javascript']][$arg])) return $dejavu[$GLOBALS['filtrer_javascript']][$arg];
 
 	if (!isset($wheel)){
@@ -280,11 +283,18 @@ function traiter_tableau($bloc) {
 			if (strpos($ligne,"\n-*")!==false OR strpos($ligne,"\n-#")!==false)
 				$ligne = traiter_listes($ligne);
 
-			// Pas de paragraphes dans les cellules
-			$ligne = preg_replace("/\n{2,}/", "<br /><br />\n", $ligne);
-
 			// tout mettre dans un tableau 2d
 			preg_match_all('/\|([^|]*)/S', $ligne, $cols);
+
+			// Pas de paragraphes dans les cellules
+			foreach ($cols[1] as &$col) {
+				if (strlen($col = trim($col))) {
+					$col = preg_replace("/\n{2,}/S", "<br /> <br />", $col);
+					$col = str_replace("\n", _AUTOBR."\n", $col);
+				}
+			}
+
+			// assembler le tableau
 			$lignes[]= $cols[1];
 		}
 	}
@@ -332,7 +342,7 @@ function traiter_tableau($bloc) {
 		$ligne='';
 
 		for($c=count($cols)-1; $c>=0; $c--) {
-			$attr= $numeric[$c]; 
+			$attr= $numeric[$c];
 			$cell = trim($cols[$c]);
 			if($cell=='<') {
 			  $colspan++;
@@ -506,6 +516,13 @@ function personnaliser_raccourcis(&$ruleset){
 // http://doc.spip.org/@traiter_raccourcis
 function traiter_raccourcis($t) {
 	static $wheel, $notes;
+
+	// hack1: respecter le tag ignore br
+	if (substr($t, 0, strlen(_AUTOBR_IGNORER)) == _AUTOBR_IGNORER) {
+		$ignorer_autobr = true;
+		$t = substr($t, strlen(_AUTOBR_IGNORER));
+	}
+
 	// Appeler les fonctions de pre_traitement
 	$t = pipeline('pre_propre', $t);
 
@@ -535,6 +552,26 @@ function traiter_raccourcis($t) {
 	if ($mes_notes)
 		$notes($mes_notes);
 
+	// hack2: wrap des autobr dans l'espace prive, pour affichage css
+	// car en css on ne sait pas styler l'element BR
+	if ($ignorer_autobr) {
+		foreach (array('t', 'mes_notes') as $k) {
+			$rep = _DIR_RACINE ? '<span style="color:gray">&para;</span>' : '';
+			$$k = str_replace(_AUTOBR, $rep, $$k);
+		}
+	}
+	if (_DIR_RACINE) {
+		$manual = "<span style='color:green;'>&#x21B5;";
+		$auto = "<span style='color:orange;'>&para;";
+		foreach (array('t', 'mes_notes') as $k) {
+			if (false !== strpos(strtolower($$k), '<br')) {
+				$$k = preg_replace("/<br\b.*>/UiS", "$manual\\0</span>", $$k);
+				if (_AUTOBR)
+					$$k = str_replace($manual._AUTOBR, $auto._AUTOBR, $$k);
+			}
+		}
+	}
+
 	return $t;
 }
 
@@ -561,7 +598,7 @@ function propre($t, $connect=null, $env=array()) {
 	
 	$t = traiter_raccourcis($t);
 	$t = echappe_retour_modeles($t, $interdire_script);
-	
+
 	return $t;
 }
 ?>

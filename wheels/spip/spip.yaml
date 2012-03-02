@@ -87,7 +87,7 @@ puce:
 
 br:
   match: "/\n_ +/S"
-  replace: "\n<br />"
+  replace: "<br class='manualbr' />"
   if_str: "\n_"
   priority: -20 # avant !paragraphes
 

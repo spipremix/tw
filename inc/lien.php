@@ -360,7 +360,7 @@ function traiter_lien_explicite ($ref, $texte='', $pour='url', $connect='', $ech
 	if (!$texte) {
 		$texte = str_replace('"', '', $lien);
 		static $lien_court;
-		// evite l'affichage de trops longues urls.
+		// evite l'affichage de trop longues urls.
 		if (!$lien_court)
 			$lien_court = charger_fonction('lien_court', 'inc');
 		$texte = $lien_court($texte);

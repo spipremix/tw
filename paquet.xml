@@ -1,7 +1,7 @@
 <paquet
 	prefix="tw"
 	categorie="outil"
-	version="0.7.3"
+	version="0.8.0"
 	etat="test"
 	compatibilite="[3.0.0-alpha2;["
 	logo="textwheel-32.png"
@@ -12,7 +12,7 @@
 
 	<auteur>Collectif SPIP</auteur>
 
-	<licence lien="http://www.gnu.org/licenses/gpl-3.0.html">GNU/GPL</licence>
+	<licence lien="http://www.gnu.org/licenses/lgpl.html">GNU/LGPL</licence>
 
 	<pipeline nom="trig_purger" inclure="inc/textwheel.php" />
 

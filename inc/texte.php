@@ -583,7 +583,7 @@ function propre($t, $connect=null, $env=array()) {
 	// les appels dans les squelettes (de l'espace prive) fournissant un $connect
 	// ne seront pas perturbes
 	$interdire_script = false;
-	if (is_null($connect)){
+	if (is_null($connect) AND test_espace_prive()){
 		$connect = '';
 		$interdire_script = true;
 	}

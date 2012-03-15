@@ -19,7 +19,7 @@ include_spip('inc/textwheel');
 
 
 defined('_AUTOBR')||define('_AUTOBR', "<br class='autobr' />");
-define('_AUTOBR_IGNORER', "<!-- ig br -->");
+define('_AUTOBR_IGNORER', _AUTOBR?"<!-- ig br -->":"");
 
 // Avec cette surcharge, cette globale n'est plus définie, et du coup ça plante dans les plugins qui font un foreach dessus comme ZPIP
 $GLOBALS['spip_raccourcis_typo'] = array();
@@ -290,7 +290,8 @@ function traiter_tableau($bloc) {
 			foreach ($cols[1] as &$col) {
 				if (strlen($col = trim($col))) {
 					$col = preg_replace("/\n{2,}/S", "<br /> <br />", $col);
-					$col = str_replace("\n", _AUTOBR."\n", $col);
+					if (_AUTOBR)
+						$col = str_replace("\n", _AUTOBR."\n", $col);
 				}
 			}
 
@@ -518,7 +519,8 @@ function traiter_raccourcis($t) {
 	static $wheel, $notes;
 
 	// hack1: respecter le tag ignore br
-	if (substr($t, 0, strlen(_AUTOBR_IGNORER)) == _AUTOBR_IGNORER) {
+	if (_AUTOBR_IGNORER
+		AND strncmp($t, _AUTOBR_IGNORER, strlen(_AUTOBR_IGNORER))==0) {
 		$ignorer_autobr = true;
 		$t = substr($t, strlen(_AUTOBR_IGNORER));
 	} else
@@ -555,17 +557,16 @@ function traiter_raccourcis($t) {
 
 	// hack2: wrap des autobr dans l'espace prive, pour affichage css
 	// car en css on ne sait pas styler l'element BR
-	if ($ignorer_autobr) {
+	if ($ignorer_autobr AND _AUTOBR) {
 		$rep = _DIR_RACINE ? '<span style="color:gray">&para;</span>' : '';
 		$t = str_replace(_AUTOBR, $rep, $t);
 	}
-	if (_DIR_RACINE) {
+	if (_DIR_RACINE AND _AUTOBR) {
 		$manual = "<span style='color:green;'>&#x21B5;";
 		$auto = "<span style='color:orange;'>&para;";
 		if (false !== strpos(strtolower($t), '<br')) {
 			$t = preg_replace("/<br\b.*>/UiS", "$manual\\0</span>", $t);
-			if (_AUTOBR)
-				$t = str_replace($manual._AUTOBR, $auto._AUTOBR, $t);
+			$t = str_replace($manual._AUTOBR, $auto._AUTOBR, $t);
 		}
 	}
 

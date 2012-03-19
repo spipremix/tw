@@ -62,17 +62,9 @@
               is_callback: Y
               replace: tw_def_wrap
             def-p-titre:
-              # premiere parenthese ne compte pas dans la profondeur
-              # capture deuxieme parenthese : ul
-              # capture troisime parenthese : ol
-              # nombre de car dans la 2eme ou 3eme parenthese = profondeur
               match: ",(\n-(&nbsp;)?\?\s+)(.*)(?=(\z|\n-)),UsS"
               replace: "<dt>$3</dt>"
             def-p-desc:
-              # premiere parenthese ne compte pas dans la profondeur
-              # capture deuxieme parenthese : ul
-              # capture troisime parenthese : ol
-              # nombre de car dans la 2eme ou 3eme parenthese = profondeur
-              match: ",(\n-(&nbsp;)?!\s+)(.*)(?=(\z|\n-)),UsS"
+              match: ",(\n-(&nbsp;)?!\s+)(.*)(?=(<dt>|</dl>|\z|\n-)),UsS"
               replace: "<dd>$3</dd>"
 

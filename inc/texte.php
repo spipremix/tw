@@ -515,8 +515,9 @@ function personnaliser_raccourcis(&$ruleset){
 }
 
 // http://doc.spip.org/@traiter_raccourcis
-function traiter_raccourcis($t) {
+function traiter_raccourcis($t, $show_autobr = false) {
 	static $wheel, $notes;
+	static $img_br_auto,$img_br_manuel,$img_br_no;
 
 	// hack1: respecter le tag ignore br
 	if (_AUTOBR_IGNORER
@@ -558,15 +559,18 @@ function traiter_raccourcis($t) {
 	// hack2: wrap des autobr dans l'espace prive, pour affichage css
 	// car en css on ne sait pas styler l'element BR
 	if ($ignorer_autobr AND _AUTOBR) {
-		$rep = _DIR_RACINE ? '<span style="color:gray">&para;</span>' : '';
-		$t = str_replace(_AUTOBR, $rep, $t);
+		if (is_null($img_br_no))
+			$img_br_no = ($show_autobr?http_img_pack("br-no-10.png",_T("tw:retour_ligne_ignore"),"class='br-no'",_T("tw:retour_ligne_ignore")):"");
+		$t = str_replace(_AUTOBR, $img_br_no, $t);
 	}
-	if (_DIR_RACINE AND _AUTOBR) {
-		$manual = "<span style='color:green;'>&#x21B5;";
-		$auto = "<span style='color:orange;'>&para;";
+	if ($show_autobr AND _AUTOBR) {
+		if (is_null($img_br_manuel))
+			$img_br_manuel = http_img_pack("br-manuel-10.png",_T("tw:retour_ligne_manuel"),"class='br-manuel'",_T("tw:retour_ligne_manuel"));
+		if (is_null($img_br_auto))
+			$img_br_auto = http_img_pack("br-auto-10.png",_T("tw:retour_ligne_auto"),"class='br-auto'",_T("tw:retour_ligne_auto"));
 		if (false !== strpos(strtolower($t), '<br')) {
-			$t = preg_replace("/<br\b.*>/UiS", "$manual\\0</span>", $t);
-			$t = str_replace($manual._AUTOBR, $auto._AUTOBR, $t);
+			$t = preg_replace("/<br\b.*>/UiS", "$img_br_manuel\\0", $t);
+			$t = str_replace($img_br_manuel._AUTOBR, $img_br_auto._AUTOBR, $t);
 		}
 	}
 
@@ -594,7 +598,7 @@ function propre($t, $connect=null, $env=array()) {
 	$t = echappe_html($t);
 	$t = expanser_liens($t,$connect, $env);
 	
-	$t = traiter_raccourcis($t);
+	$t = traiter_raccourcis($t, (isset($env['wysiwyg']) AND $env['wysiwyg'])?true:false);
 	$t = echappe_retour_modeles($t, $interdire_script);
 
 	return $t;

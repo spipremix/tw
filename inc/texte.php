@@ -312,7 +312,7 @@ function traiter_tableau($bloc) {
 		// Sinon ligne normale
 		if ($l) {
 			// Gerer les listes a puce dans les cellules
-			if (strpos($ligne,"\n-*")!==false OR strpos($ligne,"\n-#")!==false)
+			if (strpos($ligne,"\n-")!==false OR strpos($ligne,"\n-")!==false)
 				$ligne = traiter_listes($ligne);
 
 			// tout mettre dans un tableau 2d
@@ -418,95 +418,23 @@ function traiter_tableau($bloc) {
 
 
 /**
- * Traitement des listes (merci a Michael Parienti)
+ * Traitement des listes
+ * on utilise la wheel correspondante
  *
  * http://doc.spip.org/@traiter_listes
  *
- * @param $texte
+ * @param string $t
  * @return string
  */
-function traiter_listes ($texte) {
-	global $class_spip, $class_spip_plus;
-	$parags = preg_split(",\n[[:space:]]*\n,S", $texte);
-	$texte ='';
+function traiter_listes ($t) {
+	static $wheel = null;
 
-	// chaque paragraphe est traite a part
-	while (list(,$para) = each($parags)) {
-		$niveau = 0;
-		$pile_li = $pile_type = array();
-		$lignes = explode("\n-", "\n" . $para);
+	if (!isset($wheel))
+		$wheel = new TextWheel(
+			SPIPTextWheelRuleset::loader($GLOBALS['spip_wheels']['listes'])
+		);
 
-		// ne pas toucher a la premiere ligne
-		list(,$debut) = each($lignes);
-		$texte .= $debut;
-
-		// chaque item a sa profondeur = nb d'etoiles
-		$type ='';
-		while (list(,$item) = each($lignes)) {
-			preg_match(",^([*]*|[#]*)([^*#].*)$,sS", $item, $regs);
-			$profond = strlen($regs[1]);
-
-			if ($profond > 0) {
-				$ajout='';
-
-				// changement de type de liste au meme niveau : il faut
-				// descendre un niveau plus bas, fermer ce niveau, et
-				// remonter
-				$nouv_type = (substr($item,0,1) == '*') ? 'ul' : 'ol';
-				$change_type = ($type AND ($type <> $nouv_type) AND ($profond == $niveau)) ? 1 : 0;
-				$type = $nouv_type;
-
-				// d'abord traiter les descentes
-				while ($niveau > $profond - $change_type) {
-					$ajout .= $pile_li[$niveau];
-					$ajout .= $pile_type[$niveau];
-					if (!$change_type)
-						unset ($pile_li[$niveau]);
-					$niveau --;
-				}
-
-				// puis les identites (y compris en fin de descente)
-				if ($niveau == $profond && !$change_type) {
-					$ajout .= $pile_li[$niveau];
-				}
-
-				// puis les montees (y compris apres une descente un cran trop bas)
-				while ($niveau < $profond) {
-					if ($niveau == 0) $ajout .= "\n\n";
-					elseif (!isset($pile_li[$niveau])) {
-						$ajout .= "<li$class_spip>";
-						$pile_li[$niveau] = "</li>";
-					}
-					$niveau ++;
-					$ajout .= "<$type$class_spip_plus>";
-					$pile_type[$niveau] = "</$type>";
-				}
-
-				$ajout .= "<li$class_spip>";
-				$pile_li[$profond] = "</li>";
-			}
-			else {
-				$ajout = "\n-";	// puce normale ou <hr>
-			}
-
-			$texte .= $ajout . $regs[2];
-		}
-
-		// retour sur terre
-		$ajout = '';
-		while ($niveau > 0) {
-			$ajout .= $pile_li[$niveau];
-			$ajout .= $pile_type[$niveau];
-			$niveau --;
-		}
-		$texte .= $ajout;
-
-		// paragraphe
-		$texte .= "\n\n";
-	}
-
-	// sucrer les deux derniers \n
-	return substr($texte, 0, -2);
+	return $wheel->text($t);
 }
 
 

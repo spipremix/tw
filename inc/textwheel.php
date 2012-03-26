@@ -48,6 +48,10 @@ $GLOBALS['spip_wheels']['paragrapher'] = array(
 	'spip/spip-paragrapher.yaml'
 );
 
+$GLOBALS['spip_wheels']['listes'] = array(
+	'spip/spip-listes.yaml'
+);
+
 //
 // Methode de chargement d'une wheel SPIP
 //

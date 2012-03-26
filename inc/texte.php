@@ -36,9 +36,12 @@ if (!isset($GLOBALS['class_spip_plus']))
 	$GLOBALS['class_spip_plus'] = ' class="spip"';
 
 
-//
-// echapper les < script ...
-//
+/**
+ * echapper les < script ...
+ *
+ * @param string $t
+ * @return string
+ */
 function echappe_js($t) {
 	static $wheel = null;
 
@@ -50,9 +53,13 @@ function echappe_js($t) {
 	return $wheel->text($t);
 }
 
-//
-// paragrapher seulement
-//
+/**
+ * paragrapher seulement
+ *
+ * @param string $t
+ * @param null $toujours_paragrapher
+ * @return string
+ */
 function paragrapher($t, $toujours_paragrapher = null) {
 	static $wheel = array();
 	if (is_null($toujours_paragrapher))
@@ -72,12 +79,18 @@ function paragrapher($t, $toujours_paragrapher = null) {
 }
 
 
-// Securite : empecher l'execution de code PHP, en le transformant en joli code
-// dans l'espace prive, cette fonction est aussi appelee par propre et typo
-// si elles sont appelees en direct
-// il ne faut pas desactiver globalement la fonction dans l'espace prive car elle protege
-// aussi les balises des squelettes qui ne passent pas forcement par propre ou typo apres
-// http://doc.spip.org/@interdire_scripts
+/**
+ * Securite : empecher l'execution de code PHP, en le transformant en joli code
+ * dans l'espace prive, cette fonction est aussi appelee par propre et typo
+ * si elles sont appelees en direct
+ * il ne faut pas desactiver globalement la fonction dans l'espace prive car elle protege
+ * aussi les balises des squelettes qui ne passent pas forcement par propre ou typo apres
+ *
+ * http://doc.spip.org/@interdire_scripts
+ *
+ * @param string $arg
+ * @return string
+ */
 function interdire_scripts($arg) {
 	// on memorise le resultat sur les arguments non triviaux
 	static $dejavu = array();
@@ -111,10 +124,18 @@ function interdire_scripts($arg) {
 }
 
 
-// Typographie generale
-// avec protection prealable des balises HTML et SPIP
-
-// http://doc.spip.org/@typo
+/**
+ * Typographie generale
+ * avec protection prealable des balises HTML et SPIP
+ *
+ * http://doc.spip.org/@typo
+ *
+ * @param string $letexte
+ * @param bool $echapper
+ * @param null $connect
+ * @param array $env
+ * @return string
+ */
 function typo($letexte, $echapper=true, $connect=null, $env=array()) {
 	// Plus vite !
 	if (!$letexte) return $letexte;
@@ -166,7 +187,13 @@ define('_TYPO_PROTECTEUR', "\x1\x2\x3\x4\x5\x6\x7\x8");
 
 define('_TYPO_BALISE', ",</?[a-z!][^<>]*[".preg_quote(_TYPO_PROTEGER)."][^<>]*>,imsS");
 
-// http://doc.spip.org/@corriger_typo
+/**
+ * http://doc.spip.org/@corriger_typo
+ *
+ * @param string $t
+ * @param string $lang
+ * @return string
+ */
 function corriger_typo($t, $lang='') {
 	static $typographie = array();
 	// Plus vite !
@@ -220,7 +247,12 @@ function corriger_typo($t, $lang='') {
 
 define('_RACCOURCI_TH_SPAN', '\s*(:?{{[^{}]+}}\s*)?|<');
 
-// http://doc.spip.org/@traiter_tableau
+/**
+ * http://doc.spip.org/@traiter_tableau
+ *
+ * @param sring $bloc
+ * @return string
+ */
 function traiter_tableau($bloc) {
 	// id "unique" pour les id du tableau
 	$tabid = substr(md5($bloc),0,4);
@@ -385,10 +417,14 @@ function traiter_tableau($bloc) {
 }
 
 
-//
-// Traitement des listes (merci a Michael Parienti)
-//
-// http://doc.spip.org/@traiter_listes
+/**
+ * Traitement des listes (merci a Michael Parienti)
+ *
+ * http://doc.spip.org/@traiter_listes
+ *
+ * @param $texte
+ * @return string
+ */
 function traiter_listes ($texte) {
 	global $class_spip, $class_spip_plus;
 	$parags = preg_split(",\n[[:space:]]*\n,S", $texte);
@@ -482,11 +518,13 @@ define('_RACCOURCI_PROTECTEUR', "\x1\x2\x3\x4");
 
 define('_RACCOURCI_BALISE', ",</?[a-z!][^<>]*[".preg_quote(_RACCOURCI_PROTEGER)."][^<>]*>,imsS");
 
-// Nettoie un texte, traite les raccourcis autre qu'URL, la typo, etc.
-
-// mais d'abord, une callback de reconfiguration des raccourcis
-// a partir de globales (est-ce old-style ? on conserve quand meme
-// par souci de compat ascendante)
+/**
+ * mais d'abord, une callback de reconfiguration des raccourcis
+ * a partir de globales (est-ce old-style ? on conserve quand meme
+ * par souci de compat ascendante)
+ *
+ * @param $ruleset
+ */
 function personnaliser_raccourcis(&$ruleset){
 	if (isset($GLOBALS['debut_intertitre']) AND $rule=$ruleset->getRule('intertitres')){
 		$rule->replace[0] = preg_replace(',<[^>]*>,Uims',$GLOBALS['debut_intertitre'],$rule->replace[0]);
@@ -514,7 +552,15 @@ function personnaliser_raccourcis(&$ruleset){
 	}
 }
 
-// http://doc.spip.org/@traiter_raccourcis
+/**
+ * Nettoie un texte, traite les raccourcis autre qu'URL, la typo, etc.
+ *
+ * http://doc.spip.org/@traiter_raccourcis
+ *
+ * @param string $t
+ * @param bool $show_autobr
+ * @return string
+ */
 function traiter_raccourcis($t, $show_autobr = false) {
 	static $wheel, $notes;
 	static $img_br_auto,$img_br_manuel,$img_br_no;
@@ -578,8 +624,15 @@ function traiter_raccourcis($t, $show_autobr = false) {
 }
 
 
-// Filtre a appliquer aux champs du type #TEXTE*
-// http://doc.spip.org/@propre
+/**
+ * Filtre a appliquer aux champs du type #TEXTE*
+ * http://doc.spip.org/@propre
+ *
+ * @param string $t
+ * @param string $connect
+ * @param array $env
+ * @return string
+ */
 function propre($t, $connect=null, $env=array()) {
 	// les appels directs a cette fonction depuis le php de l'espace
 	// prive etant historiquement ecrits sans argment $connect

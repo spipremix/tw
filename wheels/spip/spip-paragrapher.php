@@ -26,11 +26,11 @@ function fermer_para_mano(&$t) {
 		}
 	}
 
-	if (_AUTOBR){
+	if (_AUTOBR) {
 		$t = str_replace(_AUTOBR."\n"."<br", "<br", $t); #manque /i
 		$reg = ',(<br\b[^>]*>\s*)'.preg_quote(_AUTOBR."\n", ',').",iS";
 
-		$t = preg_replace($reg, "\1", $t);
+		$t = preg_replace($reg, '\1', $t);
 	}
 
 	return $t;

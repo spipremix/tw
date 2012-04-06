@@ -1,7 +1,7 @@
 <paquet
 	prefix="tw"
 	categorie="outil"
-	version="0.8.8"
+	version="0.8.9"
 	etat="test"
 	compatibilite="[3.0.0-alpha2;["
 	logo="textwheel-32.png"

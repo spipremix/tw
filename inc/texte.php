@@ -152,9 +152,10 @@ function typo($letexte, $echapper=true, $connect=null, $env=array()) {
 		$interdire_script = true;
 	}
 
+	$echapper = ($echapper?'TYPO':false);
 	// Echapper les codes <html> etc
 	if ($echapper)
-		$letexte = echappe_html($letexte, 'TYPO');
+		$letexte = echappe_html($letexte, $echapper);
 
 	//
 	// Installer les modeles, notamment images et documents ;
@@ -162,16 +163,16 @@ function typo($letexte, $echapper=true, $connect=null, $env=array()) {
 	// NOTE : propre() ne passe pas par ici mais directement par corriger_typo
 	// cf. inc/lien
 
-	$letexte = traiter_modeles($mem = $letexte, false, $echapper ? 'TYPO' : '', $connect, null, $env);
-	if ($letexte != $mem) $echapper = true;
+	$letexte = traiter_modeles($mem = $letexte, false, $echapper ? $echapper : '', $connect, null, $env);
+	if (!$echapper AND $letexte != $mem) $echapper = '';
 	unset($mem);
 
 	$letexte = corriger_typo($letexte);
 	$letexte = echapper_faux_tags($letexte);
 
 	// reintegrer les echappements
-	if ($echapper)
-		$letexte = echappe_retour($letexte, 'TYPO');
+	if ($echapper!==false)
+		$letexte = echappe_retour($letexte, $echapper);
 
 	// Dans les appels directs hors squelette, securiser ici aussi
 	if ($interdire_script)

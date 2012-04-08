@@ -2,7 +2,7 @@
 	prefix="tw"
 	categorie="outil"
 	version="0.8.9"
-	etat="test"
+	etat="stable"
 	compatibilite="[3.0.0-alpha2;["
 	logo="textwheel-32.png"
 >	

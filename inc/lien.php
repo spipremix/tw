@@ -91,7 +91,10 @@ function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='
 	# celui retourne par calculer_url.
 	# Penser au cas [<imgXX|right>->URL], qui exige typo('<a>...</a>')
 	$lien = "<a href=\"".str_replace('"', '&quot;', $lien)."\" class='$class'$lang$title$rel$mime>$texte</a>";
-	return typo($lien, true, $connect, $env);
+	$res = typo($lien, true, $connect, $env);
+	// dans ce cas, echapons le resultat du modele pour que propre etc ne viennent pas pouicher le html
+	$res = echappe_html("<html>$res</html>");
+	return $res;
 }
 
 // Regexp des raccourcis, aussi utilisee pour la fusion de sauvegarde Spip

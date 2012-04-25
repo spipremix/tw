@@ -94,13 +94,13 @@ function paragrapher($t, $toujours_paragrapher = null) {
 function interdire_scripts($arg) {
 	// on memorise le resultat sur les arguments non triviaux
 	static $dejavu = array();
-	static $wheel = null;
+	static $wheel = array();
 
 	// Attention, si ce n'est pas une chaine, laisser intact
 	if (!$arg OR !is_string($arg) OR !strstr($arg, '<')) return $arg;
 	if (isset($dejavu[$GLOBALS['filtrer_javascript']][$arg])) return $dejavu[$GLOBALS['filtrer_javascript']][$arg];
 
-	if (!isset($wheel)){
+	if (!isset($wheel[$GLOBALS['filtrer_javascript']])){
 		$ruleset = SPIPTextWheelRuleset::loader(
 			$GLOBALS['spip_wheels']['interdire_scripts']
 		);
@@ -109,10 +109,10 @@ function interdire_scripts($arg) {
 		if ($GLOBALS['filtrer_javascript']==1
 			OR ($GLOBALS['filtrer_javascript']==0 AND !test_espace_prive()))
 			$ruleset->addRules (array('securite-js'=>array('disabled'=>true)));
-		$wheel = new TextWheel($ruleset);
+		$wheel[$GLOBALS['filtrer_javascript']] = new TextWheel($ruleset);
 	}
 
-	$t = $wheel->text($arg);
+	$t = $wheel[$GLOBALS['filtrer_javascript']]->text($arg);
 
 	// Reinserer les echappements des modeles
 	if (defined('_PROTEGE_JS_MODELES'))

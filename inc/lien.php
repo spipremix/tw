@@ -33,15 +33,21 @@ function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='
 	if ($hlang
 	AND $match = typer_raccourci($lien)) { 
 		@list($type,,$id,,$args,,$ancre) = $match;
-		$table_objet_sql = table_objet_sql($type);
-		$id_table_objet = id_table_objet($type);
-		if ($row=sql_fetsel('*', $table_objet_sql, "$id_table_objet=".intval($id))
-			AND isset($row['id_trad'])
-			AND isset($row['lang'])
-			AND $id_dest = sql_getfetsel($id_table_objet, $table_objet_sql,"id_trad=".intval($row['id_trad'])." AND lang=" . sql_quote($hlang))
-			AND objet_test_si_publie($type,$id_dest)
-		)
-			$lien = "$type$id_dest";
+		$trouver_table = charger_fonction('trouver_table', 'base');
+		$desc = $trouver_table(table_objet($type, $connect),$connect);
+		if ($desc
+			AND $id_table_objet = $desc['key']['PRIMARY KEY']) {
+			$table_objet_sql = $desc['table'];
+			if ($row=sql_fetsel('*', $table_objet_sql, "$id_table_objet=".intval($id))
+				AND isset($row['id_trad'])
+				AND isset($row['lang'])
+				AND $id_dest = sql_getfetsel($id_table_objet, $table_objet_sql,"id_trad=".intval($row['id_trad'])." AND lang=" . sql_quote($hlang))
+				AND objet_test_si_publie($type,$id_dest)
+			)
+				$lien = "$type$id_dest";
+			else
+				$hlang = '';
+		}
 		else
 			$hlang = '';
 	}

@@ -313,7 +313,9 @@ function traiter_tableau($bloc) {
 		// Sinon ligne normale
 		if ($l) {
 			// Gerer les listes a puce dans les cellules
-			if (strpos($ligne,"\n-")!==false OR strpos($ligne,"\n-")!==false)
+			// on declenche simplement sur \n- car il y a les
+			// -* -# -? -! (qui produisent des -&nbsp;!)
+			if (strpos($ligne,"\n-")!==false)
 				$ligne = traiter_listes($ligne);
 
 			// tout mettre dans un tableau 2d

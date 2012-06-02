@@ -107,7 +107,7 @@ function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='
 // Laisser passer des paires de crochets pour la balise multi
 // mais refuser plus d'imbrications ou de mauvaises imbrications
 // sinon les crochets ne peuvent plus servir qu'a ce type de raccourci
-define('_RACCOURCI_LIEN', "/\[([^][]*?([[]\w*[]][^][]*)*)->(>?)([^]]*)\]/msS");
+define('_RACCOURCI_LIEN', "/\[([^][]*?([[][^]>-]*[]][^][]*)*)->(>?)([^]]*)\]/msS");
 
 // http://doc.spip.org/@expanser_liens
 function expanser_liens($t, $connect='', $env=array())
@@ -225,9 +225,13 @@ function nettoyer_raccourcis_typo($texte, $connect='')
 
 
 // Repere dans la partie texte d'un raccourci [texte->...]
-// la langue et la bulle eventuelles
-
-define('_RACCOURCI_ATTRIBUTS', '/^(.*?)([|]([^<>]*?))?([{]([a-z_]*)[}])?$/');
+// la langue et la bulle eventuelles : [texte|title{lang}->...]
+// accepte un niveau de paire de crochets dans le texte :
+// [texte[]|title{lang}->...]
+// mais refuse
+// [texte[|title{lang}->...]
+// pour ne pas confondre avec un autre raccourci
+define('_RACCOURCI_ATTRIBUTS', '/^((?:[^[]*?(?:\[[^]]*\])?)*?)([|]([^<>]*?))?([{]([a-z_]*)[}])?$/');
 
 // http://doc.spip.org/@traiter_raccourci_lien_atts
 function traiter_raccourci_lien_atts($texte) {

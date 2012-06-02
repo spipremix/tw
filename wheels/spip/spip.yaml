@@ -95,7 +95,7 @@ abbr:
   # raccourcis en [ABBR|abbreviation]
   if_chars: "["
   if_chars: "|"
-  match: "/\[([^\|\]>]+)\|([^\|\]\{>]+)(?:\{([a-z]+)\})?\]/S"
+  match: "/\[([^\|\[\]>]+)\|([^\|\]\{>]+)(?:\{([a-z]+)\})?\]/S"
   is_callback: Y
   replace: inserer_abbr
 

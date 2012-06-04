@@ -143,7 +143,8 @@ class TextWheel {
 	 * @return TextWheel
 	 */
 	protected function &createSubWheel(&$rules){
-		return new TextWheel($rules);
+		$tw = new TextWheel($rules);
+		return $tw;
 	}
 
 	/**

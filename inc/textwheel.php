@@ -17,9 +17,12 @@ include_spip('engine/textwheel');
 //
 // Definition des principales wheels de SPIP
 //
+if (!isset($GLOBALS['spip_wheels'])) {
+	$GLOBALS['spip_wheels'] = array();
+}
 
 // Si le tableau des raccourcis existe déjà
-if (!is_array($GLOBALS['spip_wheels']['raccourcis']))
+if (!isset($GLOBALS['spip_wheels']['raccourcis']) OR !is_array($GLOBALS['spip_wheels']['raccourcis']))
 	$GLOBALS['spip_wheels']['raccourcis'] = array(
 		'spip/spip.yaml',
 		'spip/spip-paragrapher.yaml'
@@ -81,7 +84,7 @@ class SPIPTextWheelRuleset extends TextWheelRuleSet {
 		# lecture du cache
 		include_spip('inc/memoization');
 		if (!function_exists('cache_get')) include_spip('inc/memoization-mini');
-		if (_VAR_MODE!='recalcul'
+		if ((!defined('_VAR_MODE') OR _VAR_MODE!='recalcul')
 		  AND $cacheruleset = cache_get($key))
 			return $cacheruleset;
 

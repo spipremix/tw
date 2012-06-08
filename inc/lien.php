@@ -89,7 +89,7 @@ function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='
 	// les rares cas de lien qui encapsule un modele passe en dessous, c'est plus lent
 	if (traiter_modeles($texte, false, '', $connect, null, $env)==$texte){
 		$texte = typo($texte, true, $connect, $env);
-		$lien = "<a href=\"".str_replace('"', '&quot;', $lien)."\" class='$class'$lang$title$rel$mime>$texte</a>";
+		$lien = "<a href=\"".str_replace('"', '&quot;', $lien)."\" class='$class'$lang$title$rel".(isset($mime)?$mime:'').">$texte</a>";
 		return $lien;
 	}
 	# ceci s'execute heureusement avant les tableaux et leur "|".
@@ -492,7 +492,7 @@ function traiter_modeles($texte, $doublons=false, $echap='', $connect='', $liens
 			$a = strpos($texte,$match[0]);
 			preg_match(_RACCOURCI_MODELE_DEBUT,
 			substr($texte, $a), $regs);
-			$regs[]=""; // s'assurer qu'il y a toujours un 5e arg, eventuellement vide
+			while(count($regs) < 6) $regs[] = ""; // s'assurer qu'il y a toujours un 5e arg, eventuellement vide
 			list(,$mod, $type, $id, $params, $fin) = $regs;
 			if ($fin AND
 			preg_match('/<a\s[^<>]*>\s*$/i',

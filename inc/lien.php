@@ -77,8 +77,10 @@ function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='
 
 	$lang = ($hlang ? " hreflang='$hlang'" : '');
 
-	if ($title) $title = ' title="'.attribut_html($title).'"';
-
+	if ($title)
+		$title = ' title="'.attribut_html($title).'"';
+	else
+		$title = ''; // $title peut etre 'false'
 	// rel=external pour les liens externes
 	if ((strncmp($lien,'http://',7)==0 OR strncmp($lien,'https://',8)==0)
 	  AND strncmp("$lien/", $u ,strlen($u))!=0)
@@ -236,7 +238,7 @@ define('_RACCOURCI_ATTRIBUTS', '/^((?:[^[]*?(?:\[[^]]*\])?)*?)([|]([^<>]*?))?([{
 // http://doc.spip.org/@traiter_raccourci_lien_atts
 function traiter_raccourci_lien_atts($texte) {
 
-	$bulle = $hlang = '';
+	$bulle = $hlang = false;
 	// title et hreflang donnes par le raccourci ?
 	if (strpbrk($texte, "|{") !== false AND
 	  preg_match(_RACCOURCI_ATTRIBUTS, $texte, $m)) {
@@ -604,6 +606,7 @@ function traiter_raccourci_glossaire($texte)
 			$gloss = $m[1] ? ('#' . $m[1]) : '';
 			$t = $r[1] . $r[2] . $r[5];
 			list($t, $bulle, $hlang) = traiter_raccourci_lien_atts($t);
+			if ($bulle===false) $bulle = $m[1];
 			$t = unicode2charset(charset2unicode($t), 'utf-8');
 			$ref = $lien("glose$_n$gloss", $t, 'spip_glossaire', $bulle, $hlang);
 			$texte = str_replace($regs[0], $ref, $texte);

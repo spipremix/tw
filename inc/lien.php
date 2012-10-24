@@ -53,6 +53,7 @@ function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='
 	}
 
 	$mode = ($texte AND $class) ? 'url' : 'tout';
+	$lang = '';
 	$lien = calculer_url($lien, $texte, $mode, $connect);
 	if ($mode === 'tout') {
 		$texte = $lien['titre'];

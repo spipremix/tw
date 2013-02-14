@@ -10,6 +10,12 @@
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
+/**
+ * Gestion des notes de bas de page
+ *
+ * @package SPIP\Textwheel\Notes
+**/
+
 if (!defined("_ECRIRE_INC_VERSION")) return;
 
 //
@@ -21,14 +27,33 @@ if (!defined('_NOTES_OUVRE_NOTE')) define('_NOTES_OUVRE_NOTE','<span class="spip
 if (!defined('_NOTES_FERME_NOTE')) define('_NOTES_FERME_NOTE',']&nbsp;</span>');
 if (!defined('_NOTES_RACCOURCI')) define('_NOTES_RACCOURCI', ',\[\[(\s*(<([^>\'"]*)>)?(.*?))\]\],msS');
 
-// argument = true: empiler l'etat courant, initialiser un nouvel etat
-// argument = false: restaurer l'etat precedent, denonce un etat courant perdu
-// argument chaine, on y recherche les notes et on les renvoie en tableau
-// argument tableau, texte de notes a rajouter dans ce qu'on a deja
-// le dernier cas retourne la composition totale
-// en particulier, envoyer un tableau vide permet de tout recuperer
-// C'est stocke dans la globale $les_notes, mais pas besoin de le savoir
 
+/**
+ * Empile ou dépile des notes de bas de page
+ *
+ * Point d'entrée pour la gestion des notes.
+ * 
+ * @note
+ *     C'est stocké dans la globale `$les_notes`, mais pas besoin de le savoir
+ * @param bool|string|array $arg
+ *     Argument :
+ *
+ *     - true : empiler l'etat courant, initialiser un nouvel état
+ *     - false : restaurer l'état précédent, dénonce un état courant perdu
+ *     - chaîne : on y recherche les notes et on les renvoie en tableau
+ *     - tableau : texte de notes à rajouter dans ce qu'on a déjà
+ *
+ *     Ce dernier cas retourne la composition totale, en particulier,
+ *     envoyer un tableau vide permet de tout récupérer.
+ * @param string $operation
+ *     En complément du format attendu dans `$arg`, on indique ici
+ *     le type d'oopétation à réaliser (traiter | empiler | depiler |
+ *     sauver_etat | restaurer_etat | contexter_cache)
+ * @param bool $ignorer_autobr
+ *     True pour ne pas prendre en compte les retours à la ligne comme
+ *     des tags br (mais 2 à la suite font un paragraphe tout de même).
+ * @return string|array
+**/
 function inc_notes_dist($arg,$operation='traiter', $ignorer_autobr=false)
 {
 	static $pile = array();

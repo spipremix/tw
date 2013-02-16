@@ -1,10 +1,20 @@
 <?php
 
+/**
+ * Fonctions utiles pour les wheels SPIP sur les paragraphes
+ *
+ * @SPIP\Textwheel\Wheel\SPIP\Fonctions
+**/
+
 if (!defined('_ECRIRE_INC_VERSION')) return;
 
 /**
- * callback fermer-para-mano
- * on refait le preg, a la main
+ * Callback fermer-para-mano
+ * 
+ * On refait le preg, à la main
+ *
+ * @param string $t
+ * @return string
  */
 function fermer_para_mano(&$t) {
 	# match: ",<p (.*)<(/?)(STOP P|div|pre|ul|ol|li|blockquote|h[1-6r]|t(able|[rdh]|head|body|foot|extarea)|form|object|center|marquee|address|applet|iframe|d[ltd]|script|noscript|map|button|fieldset|style)\b,UimsS"

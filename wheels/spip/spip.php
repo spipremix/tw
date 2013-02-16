@@ -2,11 +2,18 @@
 
 if (!defined('_ECRIRE_INC_VERSION')) return;
 
+/**
+ * Fonctions utiles pour les wheels SPIP
+ *
+ * @SPIP\Textwheel\Wheel\SPIP\Fonctions
+**/
+
 include_spip('inc/texte');
 
 /**
- * callback pour la puce qui est definissable/surchargeable
+ * Callback pour la puce qui est définissable/surchargeable
  * @return string
+ *     Code HTML d'une puce
  */
 function replace_puce(){
 	static $puce;
@@ -16,11 +23,16 @@ function replace_puce(){
 }
 
 /**
- * callback pour les Abbr :
- * [ABBR|abbrevation]
- * [ABBR|abbrevation{lang}]
+ * Callback pour les Abbr
+ *
+ * @example
+ *     ```
+ *     [ABBR|abbrevation]
+ *     [ABBR|abbrevation{lang}]
+ *     ```
  * @param array $m
  * @return string
+ *     Code HTML d'une abréviation
  */
 function inserer_abbr($m){
 	$title = attribut_html($m[2]);

@@ -1,12 +1,14 @@
 <?php
 
-if (!defined('_ECRIRE_INC_VERSION')) return;
-
 /**
  * Fonctions utiles pour les wheels SPIP
  *
  * @SPIP\Textwheel\Wheel\SPIP\Fonctions
 **/
+
+if (!defined('_ECRIRE_INC_VERSION')) return;
+
+
 
 include_spip('inc/texte');
 

@@ -25,7 +25,7 @@ function typographie_fr($t) {
 		"&laquo;" => '&#171;',
 		"&rdquo;" => '&#8221;',
 		"&ldquo;" => '&#8220;',
-		"&deg" => '&#176;',
+		"&deg;" => '&#176;',
 		"'" => '&#8217;'
 		);
 		switch ($GLOBALS['meta']['charset']) {

@@ -10,6 +10,14 @@
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
+/**
+ * Gestion des textes et raccourcis SPIP
+ *
+ * Surcharge de ecrire/inc/texte
+ * 
+ * @package SPIP\Textwheel\Texte
+**/
+
 if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('inc/texte_mini');
@@ -37,7 +45,7 @@ if (!isset($GLOBALS['class_spip_plus']))
 
 
 /**
- * echapper les < script ...
+ * Échapper et affichier joliement les `<script` ...
  *
  * @param string $t
  * @return string
@@ -53,12 +61,19 @@ function echappe_js($t) {
 	return $wheel->text($t);
 }
 
+
 /**
- * paragrapher seulement
+ * Paragrapher seulement
+ *
+ * Fermer les paragraphes ; Essaie de préserver des paragraphes indiqués
+ * à la main dans le texte (par ex: on ne modifie pas un `<p align='center'>`)
  *
  * @param string $t
+ *     Le texte
  * @param null $toujours_paragrapher
+ *     true pour forcer les `<p>` même pour un seul paragraphe
  * @return string
+ *     Texte paragraphé
  */
 function paragrapher($t, $toujours_paragrapher = null) {
 	static $wheel = array();
@@ -78,19 +93,27 @@ function paragrapher($t, $toujours_paragrapher = null) {
 	return $wheel[$toujours_paragrapher]->text($t);
 }
 
-
 /**
- * Securite : empecher l'execution de code PHP, en le transformant en joli code
- * dans l'espace prive, cette fonction est aussi appelee par propre et typo
- * si elles sont appelees en direct
- * il ne faut pas desactiver globalement la fonction dans l'espace prive car elle protege
- * aussi les balises des squelettes qui ne passent pas forcement par propre ou typo apres
+ * Empêcher l'exécution de code PHP et JS
  *
- * http://doc.spip.org/@interdire_scripts
- *
+ * Sécurité : empêcher l'exécution de code PHP, en le transformant en joli code
+ * dans l'espace privé. Cette fonction est aussi appelée par propre et typo.
+ * 
+ * De la même manière, la fonction empêche l'exécution de JS mais selon le mode
+ * de protection déclaré par la globale filtrer_javascript :
+ * - -1 : protection dans l'espace privé et public
+ * - 0  : protection dans l'espace public
+ * - 1  : aucune protection
+ * 
+ * Il ne faut pas désactiver globalement la fonction dans l'espace privé car elle protège
+ * aussi les balises des squelettes qui ne passent pas forcement par propre ou typo après
+ * si elles sont appelées en direct
+ * 
  * @param string $arg
+ *     Code à protéger
  * @return string
- */
+ *     Code protégé
+**/
 function interdire_scripts($arg) {
 	// on memorise le resultat sur les arguments non triviaux
 	static $dejavu = array();
@@ -125,17 +148,29 @@ function interdire_scripts($arg) {
 
 
 /**
- * Typographie generale
- * avec protection prealable des balises HTML et SPIP
+ * Applique la typographie générale
  *
- * http://doc.spip.org/@typo
+ * Effectue un traitement pour que les textes affichés suivent les règles
+ * de typographie. Fait une protection préalable des balises HTML et SPIP.
+ * Transforme les balises `<multi>`
  *
+ * @filtre typo
+ * @uses traiter_modeles()
+ * @uses corriger_typo()
+ * @uses echapper_faux_tags()
+ * @see propre()
+ * 
  * @param string $letexte
+ *     Texte d'origine
  * @param bool $echapper
- * @param null $connect
+ *     Échapper ?
+ * @param string|null $connect
+ *     Nom du connecteur à la bdd
  * @param array $env
- * @return string
- */
+ *     Environnement (pour les calculs de modèles)
+ * @return string $t
+ *     Texte transformé
+**/
 function typo($letexte, $echapper=true, $connect=null, $env=array()) {
 	// Plus vite !
 	if (!$letexte) return $letexte;
@@ -189,11 +224,18 @@ define('_TYPO_PROTECTEUR', "\x1\x2\x3\x4\x5\x6\x7\x8");
 define('_TYPO_BALISE', ",</?[a-z!][^<>]*[".preg_quote(_TYPO_PROTEGER)."][^<>]*>,imsS");
 
 /**
- * http://doc.spip.org/@corriger_typo
+ * Corrige la typographie
  *
- * @param string $t
- * @param string $lang
- * @return string
+ * Applique les corrections typographiques adaptées à la langue indiquée.
+ * 
+ * @pipeline_appel pre_typo
+ * @pipeline_appel post_typo
+ * @uses corriger_caracteres()
+ * @uses corriger_caracteres()
+ * 
+ * @param string $t Texte
+ * @param string $lang Langue
+ * @return string Texte
  */
 function corriger_typo($t, $lang='') {
 	static $typographie = array();
@@ -249,7 +291,7 @@ function corriger_typo($t, $lang='') {
 define('_RACCOURCI_TH_SPAN', '\s*(:?{{[^{}]+}}\s*)?|<');
 
 /**
- * http://doc.spip.org/@traiter_tableau
+ * Traitement des raccourcis de tableaux
  *
  * @param sring $bloc
  * @return string
@@ -422,9 +464,8 @@ function traiter_tableau($bloc) {
 
 /**
  * Traitement des listes
- * on utilise la wheel correspondante
  *
- * http://doc.spip.org/@traiter_listes
+ * On utilise la wheel correspondante
  *
  * @param string $t
  * @return string
@@ -486,8 +527,9 @@ function personnaliser_raccourcis(&$ruleset){
 /**
  * Nettoie un texte, traite les raccourcis autre qu'URL, la typo, etc.
  *
- * http://doc.spip.org/@traiter_raccourcis
- *
+ * @pipeline_appel pre_propre
+ * @pipeline_appel post_propre
+ * 
  * @param string $t
  * @param bool $show_autobr
  * @return string
@@ -556,14 +598,26 @@ function traiter_raccourcis($t, $show_autobr = false) {
 
 
 /**
- * Filtre a appliquer aux champs du type #TEXTE*
- * http://doc.spip.org/@propre
+ * Transforme les raccourcis SPIP, liens et modèles d'un texte en code HTML
  *
+ * Filtre à appliquer aux champs du type `#TEXTE*`
+ * 
+ * @filtre propre
+ * @uses echappe_html()
+ * @uses expanser_liens()
+ * @uses traiter_raccourcis()
+ * @uses echappe_retour_modeles()
+ * @see typo()
+ * 
  * @param string $t
- * @param string $connect
+ *     Texte avec des raccourcis SPIP
+ * @param string|null $connect
+ *     Nom du connecteur à la bdd
  * @param array $env
- * @return string
- */
+ *     Environnement (pour les calculs de modèles)
+ * @return string $t
+ *     Texte transformé
+**/
 function propre($t, $connect=null, $env=array()) {
 	// les appels directs a cette fonction depuis le php de l'espace
 	// prive etant historiquement ecrits sans argment $connect

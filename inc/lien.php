@@ -219,6 +219,9 @@ function nettoyer_raccourcis_typo($texte, $connect='')
 			$texte = str_replace($reg[0], $titre, $texte);
 		}
 
+	// supprimer les ancres
+	$texte = preg_replace(_RACCOURCI_ANCRE,"",$texte);
+
 	// supprimer les notes
 	$texte = preg_replace(",[[][[]([^]]|[]][^]])*[]][]],UimsS","",$texte);
 

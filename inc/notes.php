@@ -192,7 +192,7 @@ function traiter_les_notes($notes,$ignorer_autobr) {
 			. code_echappement($nom
 				? _NOTES_OUVRE_NOTE."<a".$atts.">$nom</a>"._NOTES_FERME_NOTE
 				: '')
-			. $texte
+			. trim($texte)
 			.'</div>';
 		}
 		if ($ignorer_autobr)

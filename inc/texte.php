@@ -154,7 +154,7 @@ function interdire_scripts($arg) {
  * de typographie. Fait une protection préalable des balises HTML et SPIP.
  * Transforme les balises `<multi>`
  *
- * @filtre typo
+ * @filtre
  * @uses traiter_modeles()
  * @uses corriger_typo()
  * @uses echapper_faux_tags()
@@ -602,7 +602,7 @@ function traiter_raccourcis($t, $show_autobr = false) {
  *
  * Filtre à appliquer aux champs du type `#TEXTE*`
  * 
- * @filtre propre
+ * @filtre
  * @uses echappe_html()
  * @uses expanser_liens()
  * @uses traiter_raccourcis()

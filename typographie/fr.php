@@ -82,7 +82,7 @@ function typographie_fr($t) {
 		$t = str_replace($pro, '', $t);
 	}
 
-	$t = preg_replace(',(https?|ftp|mailto)~((://[^"\'\s\[\]\}\)<>]+)~([?]))?,S', '$1$3$4', $t);
+	$t = preg_replace(',(' ._PROTOCOLES_STD . ')~((://[^"\'\s\[\]\}\)<>]+)~([?]))?,S', '$1$3$4', $t);
 	$t = str_replace('~', '&nbsp;', $t);
 
 	return $t;

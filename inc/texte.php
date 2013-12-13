@@ -558,7 +558,7 @@ function traiter_raccourcis($t, $show_autobr = false) {
 		if (_request('var_mode') == 'wheel'
 		AND autoriser('debug')) {
 			$f = $wheel->compile();
-			echo "<pre>\n".htmlspecialchars($f)."</pre>\n";
+			echo "<pre>\n".spip_htmlspecialchars($f)."</pre>\n";
 			exit;
 		}
 		$notes = charger_fonction('notes', 'inc');

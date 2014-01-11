@@ -10,9 +10,12 @@ define('_EXTRAIRE_RESSOURCES', ',' . '<"?(https?://|[^\s][\w -]+\.[\w -]+)[^<]*>
 
 
 function traiter_ressources($r) {
+	$html = null;
 	if ($ressource = charger_fonction('ressource', 'inc', true)) {
 		$html = $ressource($r[0]);
-	} else {
+	}
+
+	if (is_null($html)) {
 		include_spip('inc/lien');
 		$url = explode(' ', trim($r[0], '<>'));
 		$url = $url[0];

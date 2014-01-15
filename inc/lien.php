@@ -79,7 +79,7 @@ function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='
 	}
 
 	// Si l'objet n'est pas de la langue courante, on ajoute hreflang
-	if (!$hlang AND $lang!==$GLOBALS['spip_lang'])
+	if (!$hlang AND isset($lang) AND $lang!==$GLOBALS['spip_lang'])
 		$hlang = $lang;
 
 	$lang = ($hlang ? " hreflang='$hlang'" : '');

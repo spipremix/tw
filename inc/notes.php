@@ -153,6 +153,9 @@ function traiter_raccourci_notes($letexte, $marqueur_notes)
 		$ancre = $mn . str_replace('%','_', rawurlencode($nom));
 
 		// ne mettre qu'une ancre par appel de note (XHTML)
+		if (!isset($notes_vues[$ancre])) {
+			$notes_vues[$ancre] = 0;
+		}
 		$att = ($notes_vues[$ancre]++) ? '' : " id='nh$ancre'";
 
 		// creer le popup 'title' sur l'appel de note

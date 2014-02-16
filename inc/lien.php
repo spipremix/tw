@@ -14,12 +14,24 @@ if (!defined('_ECRIRE_INC_VERSION')) return;
 
 include_spip('base/abstract_sql');
 
-//
-// Production de la balise A+href a partir des raccourcis [xxx->url] etc.
-// Note : complique car c'est ici qu'on applique typo(),
-// et en plus on veut pouvoir les passer en pipeline
-//
-
+/**
+ * Production de la balise a+href à partir des raccourcis `[xxx->url]` etc.
+ *
+ * @note 
+ *     Compliqué car c'est ici qu'on applique typo(),
+ *     et en plus, on veut pouvoir les passer en pipeline
+ * 
+ * @see typo()
+ * @param string $lien    
+ * @param string $texte   
+ * @param string $class   
+ * @param string $title   
+ * @param string $hlang   
+ * @param string $rel     
+ * @param string $connect 
+ * @param array $env     
+ * @return string          
+ */
 function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='', $connect='', $env=array()) {
 	static $u=null;
 	if (!$u) $u=url_de_base();

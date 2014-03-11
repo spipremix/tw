@@ -164,7 +164,7 @@ class TextWheel {
 		}
 
 		# optimization: strpos or stripos?
-		if (isset($rule->strpos)) {
+		if (isset($rule->if_str)) {
 			if (strtolower($rule->if_str) !== strtoupper($rule->if_str)) {
 				$rule->if_stri = $rule->if_str;
 				unset($rule->if_str);
@@ -256,7 +256,7 @@ class TextWheel {
 		if (isset($rule->if_str) AND strpos($t, $rule->if_str) === false)
 			return;
 
-		if (isset($rule->if_stri) AND stripos($t, $rule->if_str) === false)
+		if (isset($rule->if_stri) AND stripos($t, $rule->if_stri) === false)
 			return;
 
 		if (isset($rule->if_match) AND !preg_match($rule->if_match, $t))

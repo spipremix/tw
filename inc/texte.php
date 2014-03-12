@@ -293,7 +293,7 @@ define('_RACCOURCI_TH_SPAN', '\s*(:?{{[^{}]+}}\s*)?|<');
 /**
  * Traitement des raccourcis de tableaux
  *
- * @param sring $bloc
+ * @param string $bloc
  * @return string
  */
 function traiter_tableau($bloc) {

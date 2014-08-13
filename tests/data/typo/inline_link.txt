@@ -1,0 +1,9 @@
+[link avec de la typo !->http://example.com] and [another link avec de la typo !->/tests/]
+
+[<code>link avec de la typo !</code>->http://example.com]
+
+[<textwheel1|inline>->http://example.com]
+
+[<textwheel1|inline> and text avec de la typo !->http://example.com]
+
+[<textwheel1|block>->http://example.com]

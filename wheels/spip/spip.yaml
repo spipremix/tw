@@ -181,11 +181,11 @@ restaure-tags:
 echappe-chevron-solitaire:
   # un < qui n'est pas suivi d'une lettre ou d'un / est toujours echappe
   type: preg
-  match: "/<(?=[^a-z\/])/Uims"
+  match: "/<(?=[^a-z\/!])/Uims"
   replace: "&lt;"
 
 echappe-chevron-pas-ferme:
   # un < suivi d'une lettre ou d'un / est echappe si il semble mal ferme
   type: preg
-  match: "/<([^><\"']*)(?=<|$)/Uims"
+  match: "/<([^><\"'!]*)(?=<|$)/Uims"
   replace: "&lt;$1"

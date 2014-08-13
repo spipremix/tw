@@ -1,0 +1,18 @@
+<quote> quote
+the rest of it
+</quote>
+
+<quote>
+quote
+the rest of it
+</quote>
+
+<blockquote>
+quote
+the rest of it
+</blockquote>
+
+<poesie>
+quote
+the rest of it
+</poesie>

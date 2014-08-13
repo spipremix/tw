@@ -1,0 +1,9 @@
+[link|title <textwheel1|inline>->http://example.com] and [another link|title <textwheel1|inline>->/tests/]
+
+[link|title with {em <textwheel1|inline>}->http://example.com] and [another link|title with {em <textwheel1|inline>}->/tests/]
+
+[link|title with {{bold <textwheel1|inline>}}->http://example.com] and [another link|title with {{bold <textwheel1|inline>}}->/tests/]
+
+[link|title <textwheel1|inline>{fr}->http://example.com] and [another link|title <textwheel1|inline>{fr}->/tests/]
+
+[link with {em <textwheel1|inline>}|title{fr}->http://example.com] and [another link with {em <textwheel1|inline>}|title{fr}->/tests/]

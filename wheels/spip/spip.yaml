@@ -9,18 +9,6 @@ traiter_retours_chariots_1:
   replace: "\n"
   priority: -40 # avant tout
 
-traiter_retours_chariots_2:
-  if_str: "<p"
-  match: ",<p[>[:space:]],iS"
-  replace: "\n\n$0"
-  priority: -40 # avant tout
-
-traiter_retours_chariots_3:
-  if_str: "</p"
-  match: ",</p[>[:space:]],iS"
-  replace: "$0\n\n"
-  priority: -40 # avant tout
-
 init-trim:
   # trim
   type: all

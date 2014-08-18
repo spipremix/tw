@@ -496,32 +496,45 @@ define('_RACCOURCI_BALISE', ",</?[a-z!][^<>]*[".preg_quote(_RACCOURCI_PROTEGER).
  * par souci de compat ascendante)
  *
  * @param $ruleset
+ * @return string
  */
 function personnaliser_raccourcis(&$ruleset){
-	if (isset($GLOBALS['debut_intertitre']) AND $rule=$ruleset->getRule('intertitres')){
-		$rule->replace[0] = preg_replace(',<[^>]*>,Uims',$GLOBALS['debut_intertitre'],$rule->replace[0]);
-		$rule->replace[1] = preg_replace(',<[^>]*>,Uims',$GLOBALS['fin_intertitre'],$rule->replace[1]);
-		$ruleset->addRules(array('intertitres'=>$rule));
+	if ($ruleset){
+		if (isset($GLOBALS['debut_intertitre']) AND $rule=$ruleset->getRule('intertitres')){
+			$rule->replace[0] = preg_replace(',<[^>]*>,Uims',$GLOBALS['debut_intertitre'],$rule->replace[0]);
+			$rule->replace[1] = preg_replace(',<[^>]*>,Uims',$GLOBALS['fin_intertitre'],$rule->replace[1]);
+			$ruleset->addRules(array('intertitres'=>$rule));
+		}
+		if (isset($GLOBALS['debut_gras']) AND $rule=$ruleset->getRule('gras')){
+			$rule->replace[0] = preg_replace(',<[^>]*>,Uims',$GLOBALS['debut_gras'],$rule->replace[0]);
+			$rule->replace[1] = preg_replace(',<[^>]*>,Uims',$GLOBALS['fin_gras'],$rule->replace[1]);
+			$ruleset->addRules(array('gras'=>$rule));
+		}
+		if (isset($GLOBALS['debut_italique']) AND $rule=$ruleset->getRule('italiques')){
+			$rule->replace[0] = preg_replace(',<[^>]*>,Uims',$GLOBALS['debut_italique'],$rule->replace[0]);
+			$rule->replace[1] = preg_replace(',<[^>]*>,Uims',$GLOBALS['fin_italique'],$rule->replace[1]);
+			$ruleset->addRules(array('italiques'=>$rule));
+		}
+		if (isset($GLOBALS['ligne_horizontale']) AND $rule=$ruleset->getRule('ligne-horizontale')){
+			$rule->replace = preg_replace(',<[^>]*>,Uims',$GLOBALS['ligne_horizontale'],$rule->replace);
+			$ruleset->addRules(array('ligne-horizontale'=>$rule));
+		}
+		if (isset($GLOBALS['toujours_paragrapher']) AND !$GLOBALS['toujours_paragrapher']
+		  AND $rule=$ruleset->getRule('toujours-paragrapher')) {
+			$rule->disabled = true;
+			$ruleset->addRules(array('toujours-paragrapher'=>$rule));
+		}
 	}
-	if (isset($GLOBALS['debut_gras']) AND $rule=$ruleset->getRule('gras')){
-		$rule->replace[0] = preg_replace(',<[^>]*>,Uims',$GLOBALS['debut_gras'],$rule->replace[0]);
-		$rule->replace[1] = preg_replace(',<[^>]*>,Uims',$GLOBALS['fin_gras'],$rule->replace[1]);
-		$ruleset->addRules(array('gras'=>$rule));
-	}
-	if (isset($GLOBALS['debut_italique']) AND $rule=$ruleset->getRule('italiques')){
-		$rule->replace[0] = preg_replace(',<[^>]*>,Uims',$GLOBALS['debut_italique'],$rule->replace[0]);
-		$rule->replace[1] = preg_replace(',<[^>]*>,Uims',$GLOBALS['fin_italique'],$rule->replace[1]);
-		$ruleset->addRules(array('italiques'=>$rule));
-	}
-	if (isset($GLOBALS['ligne_horizontale']) AND $rule=$ruleset->getRule('ligne-horizontale')){
-		$rule->replace = preg_replace(',<[^>]*>,Uims',$GLOBALS['ligne_horizontale'],$rule->replace);
-		$ruleset->addRules(array('ligne-horizontale'=>$rule));
-	}
-	if (isset($GLOBALS['toujours_paragrapher']) AND !$GLOBALS['toujours_paragrapher']
-	  AND $rule=$ruleset->getRule('toujours-paragrapher')) {
-		$rule->disabled = true;
-		$ruleset->addRules(array('toujours-paragrapher'=>$rule));
-	}
+	// retourner une signature de l'etat de la fonction, pour la mise en cache
+	return implode("/",
+		array(
+			isset($GLOBALS['debut_intertitre'])?$GLOBALS['debut_intertitre']:"",
+			isset($GLOBALS['debut_gras'])?$GLOBALS['debut_gras']:"",
+			isset($GLOBALS['debut_italique'])?$GLOBALS['debut_italique']:"",
+			isset($GLOBALS['ligne_horizontale'])?$GLOBALS['ligne_horizontale']:"",
+			isset($GLOBALS['toujours_paragrapher'])?$GLOBALS['toujours_paragrapher']:1,
+		)
+	);
 }
 
 /**
@@ -535,7 +548,7 @@ function personnaliser_raccourcis(&$ruleset){
  * @return string
  */
 function traiter_raccourcis($t, $show_autobr = false) {
-	static $wheel, $notes;
+	static $wheel=array(), $notes;
 	static $img_br_auto,$img_br_manuel,$img_br_no;
 
 	// hack1: respecter le tag ignore br
@@ -549,11 +562,13 @@ function traiter_raccourcis($t, $show_autobr = false) {
 	// Appeler les fonctions de pre_traitement
 	$t = pipeline('pre_propre', $t);
 
-	if (!isset($wheel)) {
+	$key = "";
+	$key = personnaliser_raccourcis($key);
+	if (!isset($wheel[$key])) {
 		$ruleset = SPIPTextWheelRuleset::loader(
 			$GLOBALS['spip_wheels']['raccourcis'],'personnaliser_raccourcis'
 		);
-		$wheel = new TextWheel($ruleset);
+		$wheel[$key] = new TextWheel($ruleset);
 
 		if (_request('var_mode') == 'wheel'
 		AND autoriser('debug')) {
@@ -567,7 +582,7 @@ function traiter_raccourcis($t, $show_autobr = false) {
 	// Gerer les notes (ne passe pas dans le pipeline)
 	list($t, $mes_notes) = $notes($t);
 
-	$t = $wheel->text($t);
+	$t = $wheel[$key]->text($t);
 
 	// Appeler les fonctions de post-traitement
 	$t = pipeline('post_propre', $t);

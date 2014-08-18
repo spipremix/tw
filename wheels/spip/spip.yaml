@@ -85,6 +85,12 @@ puce:
   is_callback: Y
   priority: -20 # avant !paragraphes
 
+br-inutile:
+  match: "/(^|^\n|\n\n)_ +/S"
+  replace: "$1"
+  if_str: "_ "
+  priority: -20 # avant !paragraphes
+
 br:
   match: "/\n_ +/S"
   replace: "<br class='manualbr' />"

@@ -29,7 +29,13 @@ function fermer_para_mano(&$t) {
 			",</?(?:stop p|div|pre|ul|ol|li|blockquote|h[1-6r]|t(able|[rdh]|head|body|foot|extarea)|form|object|center|marquee|address|applet|iframe|figure|figcaption|d[ltd]|script|noscript|map|button|fieldset|style)\b,S",
 			$pi, $r)) {
 				$pos = strpos($pi, $r[0]);
-				$t .= "<p ".str_replace("\n", _AUTOBR."\n", rtrim(substr($p,0,$pos)))."</p>\n".substr($p,$pos);
+				#var_dump(substr($p,0,$pos));
+				if (($pc = strpos($pi, ">"))!==false){
+					$pc++;
+					while($pc<$pos AND in_array($p{$pc},array("\n"," ","\t"))) $pc++;
+				}
+				#var_dump(substr($p,0,$pc) . str_replace("\n", _AUTOBR."\n", rtrim(substr($p,$pc,$pos-$pc))));
+				$t .= "<p " . substr($p,0,$pc) . str_replace("\n", _AUTOBR."\n", rtrim(substr($p,$pc,$pos-$pc)))."</p>\n".substr($p,$pos);
 			} else {
 				$t .= '<p '.$p;
 			}

@@ -126,7 +126,12 @@ function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='
 	# celui retourne par calculer_url.
 	# Penser au cas [<imgXX|right>->URL], qui exige typo('<a>...</a>')
 	$lien = "<a href=\"".str_replace('"', '&quot;', $lien)."\"$class$lang$title$rel$mime>$texte</a>";
-	$res = typo($lien, true, $connect, $env);
+	#$res = typo($lien, true, $connect, $env);
+	$p = $GLOBALS['toujours_paragrapher'];
+	$GLOBALS['toujours_paragrapher'] = false;
+	$res = propre($lien, $connect, $env);
+	$GLOBALS['toujours_paragrapher'] = $p;
+
 	// dans ce cas, echapons le resultat du modele pour que propre etc ne viennent pas pouicher le html
 	$res = echappe_html("<html>$res</html>");
 	return $res;
@@ -285,9 +290,12 @@ function traiter_raccourci_lien_atts($texte) {
 				} elseif (!$m[5]) {
 					$hlang = test_espace_prive() ?
 					  $GLOBALS['lang_objet'] : $GLOBALS['spip_lang'];
-				// sinon c'est un italique
+				// sinon c'est un italique ou un gras dans le title ou dans le texte du lien
 				} else {
-					$m[1] .= $m[4];
+					if ($bulle)
+						$bulle .= $m[4];
+					else
+						$m[1] .= $m[2] . $m[4];
 				}
 
 			// S'il n'y a pas de hreflang sous la forme {}, ce qui suit le |
@@ -301,6 +309,10 @@ function traiter_raccourci_lien_atts($texte) {
 			}
 		}
 		$texte = $m[1];
+	}
+	if ($bulle) {
+		$bulle = nettoyer_raccourcis_typo($bulle);
+		$bulle = corriger_typo($bulle);
 	}
 
 	return array(trim($texte), $bulle, $hlang);

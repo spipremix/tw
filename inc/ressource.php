@@ -10,17 +10,17 @@ define('_EXTRAIRE_RESSOURCES', ',' . '<"?(https?://|[^\s][\w -]+\.[\w -]+)[^<]*>
 
 
 /* pipeline pour typo */
-function ressource_post_typo($t) {
+function tw_post_typo($t) {
 	if (strpos($t, '<') !== false) {
-		$t = preg_replace_callback(_EXTRAIRE_RESSOURCES, 'traiter_ressources', $t);
+		$t = preg_replace_callback(_EXTRAIRE_RESSOURCES, 'tw_traiter_ressources', $t);
 	}
 	return $t;
 }
 
 /* pipeline pour propre */
-function ressource_pre_liens($t) {
+function tw_pre_liens($t) {
 	if (strpos($t, '<') !== false) {
-		$t = preg_replace_callback(_EXTRAIRE_RESSOURCES, 'traiter_ressources', $t);
+		$t = preg_replace_callback(_EXTRAIRE_RESSOURCES, 'tw_traiter_ressources', $t);
 
 		// echapper les autoliens eventuellement inseres (en une seule fois)
 		if (strpos($t,"<html>")!==false)
@@ -29,7 +29,7 @@ function ressource_pre_liens($t) {
 	return $t;
 }
 
-function traiter_ressources($r) {
+function tw_traiter_ressources($r) {
 	$html = null;
 
 	include_spip('inc/lien');

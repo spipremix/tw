@@ -89,6 +89,8 @@ function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='
 		)
 			$class = "spip_out"; # si pas spip_in|spip_glossaire
 	}
+	if ($class)
+		$class=" class='$class'";
 
 	// Si l'objet n'est pas de la langue courante, on ajoute hreflang
 	if (!$hlang AND isset($lang) AND $lang!==$GLOBALS['spip_lang'])
@@ -110,14 +112,14 @@ function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='
 	// les rares cas de lien qui encapsule un modele passe en dessous, c'est plus lent
 	if (traiter_modeles($texte, false, '', $connect, null, $env)==$texte){
 		$texte = typo($texte, true, $connect, $env);
-		$lien = "<a href=\"".str_replace('"', '&quot;', $lien)."\" class='$class'$lang$title$rel".(isset($mime)?$mime:'').">$texte</a>";
+		$lien = "<a href=\"".str_replace('"', '&quot;', $lien)."\"$class$lang$title$rel".(isset($mime)?$mime:'').">$texte</a>";
 		return $lien;
 	}
 	# ceci s'execute heureusement avant les tableaux et leur "|".
 	# Attention, le texte initial est deja echappe mais pas forcement
 	# celui retourne par calculer_url.
 	# Penser au cas [<imgXX|right>->URL], qui exige typo('<a>...</a>')
-	$lien = "<a href=\"".str_replace('"', '&quot;', $lien)."\" class='$class'$lang$title$rel$mime>$texte</a>";
+	$lien = "<a href=\"".str_replace('"', '&quot;', $lien)."\"$class$lang$title$rel$mime>$texte</a>";
 	$res = typo($lien, true, $connect, $env);
 	// dans ce cas, echapons le resultat du modele pour que propre etc ne viennent pas pouicher le html
 	$res = echappe_html("<html>$res</html>");

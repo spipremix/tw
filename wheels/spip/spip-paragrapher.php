@@ -20,26 +20,34 @@ function fermer_para_mano(&$t) {
 	# match: ",<p (.*)<(/?)(STOP P|div|pre|ul|ol|li|blockquote|h[1-6r]|t(able|[rdh]|head|body|foot|extarea)|form|object|center|marquee|address|applet|iframe|figure|figcaption|d[ltd]|script|noscript|map|button|fieldset|style)\b,UimsS"
 	# replace: "\n<p "+trim($1)+"</p>\n<$2$3"
 
-	foreach (explode('<p ', $t) as $c => $p) {
-		if ($c == 0)
-			$t = $p;
-		else {
-			$pi = strtolower($p);
-			if (preg_match(
-			",</?(?:stop p|div|pre|ul|ol|li|blockquote|h[1-6r]|t(able|[rdh]|head|body|foot|extarea)|form|object|center|marquee|address|applet|iframe|figure|figcaption|d[ltd]|script|noscript|map|button|fieldset|style)\b,S",
-			$pi, $r)) {
-				$pos = strpos($pi, $r[0]);
-				$t .= "<p " . str_replace("\n", _AUTOBR."\n", rtrim(substr($p,0,$pos)))."</p>\n".substr($p,$pos);
-			} else {
-				$t .= '<p '.$p;
+	foreach (array('<p '=>"</p>\n",'<li'=>"<br-li/>") as $cut=>$close){
+		if (strpos($t,$cut)!==false){
+			foreach (explode($cut, $t) as $c => $p) {
+				if ($c == 0)
+					$t = $p;
+				else {
+					$pi = strtolower($p);
+					if (preg_match(
+					",</?(?:stop p|div|pre|ul|ol|li|blockquote|h[1-6r]|t(able|[rdh]|head|body|foot|extarea)|form|object|center|marquee|address|applet|iframe|figure|figcaption|d[ltd]|script|noscript|map|button|fieldset|style)\b,S",
+					$pi, $r)) {
+						$pos = strpos($pi, $r[0]);
+						$t .= $cut . str_replace("\n", _AUTOBR."\n", ($close?rtrim(substr($p,0,$pos)):substr($p,0,$pos))). $close . substr($p,$pos);
+					} else {
+						$t .= $cut . $p;
+					}
+				}
 			}
 		}
 	}
 
 	if (_AUTOBR) {
-		$t = str_replace(_AUTOBR."\n"."<br", "<br", $t); #manque /i
-		$reg = ',(<(p|br)\b[^>]*>\s*)'.preg_quote(_AUTOBR."\n", ',').",iS";
-
+		$t = str_replace(_AUTOBR."\n"."<br", "\n<br", $t); #manque /i
+		if (strpos($t,"<br-li/>")){
+			$t = str_replace("<br-li/></li>","</li>",$t); // pour respecter les non-retour lignes avant </li>
+			$t = str_replace("<br-li/><ul>","<ul>",$t); // pour respecter les non-retour lignes avant <ul>
+			$t = str_replace("<br-li/>","\n",$t);
+		}
+		$reg = ',(<(p|br|li)\b[^>]*>\s*)'.preg_quote(_AUTOBR."\n", ',').",iS";
 		$t = preg_replace($reg, '\1'."\n", $t);
 	}
 

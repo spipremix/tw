@@ -19,6 +19,14 @@ toujours-ouvrir:
     match: ",</(?:div|pre|ul|ol|li|blockquote|h[1-6r]|t(able|[rdh]|head|body|foot|extarea)|form|object|center|marquee|address|applet|iframe|figure|figcaption|d[ltd]|script|noscript|map|button|fieldset|style)[^>]*>\s*?,UimsS"
     replace: "$0<p>"
 
+li-ouvrir:
+    # toujours ouvrir un parapgraphe quand on ouvre une liste ?
+    # desactive
+    if_str: "<li"
+    match: ",<li[^>]*>\s*?,UimsS"
+    replace: "$0<p>"
+    disabled: Y
+
 ajouter-stop-p1:
     # Ajouter un espace aux <p> et un "STOP P"
     # transformer aussi les </p> existants en <p>, nettoyes ensuite

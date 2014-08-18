@@ -29,13 +29,7 @@ function fermer_para_mano(&$t) {
 			",</?(?:stop p|div|pre|ul|ol|li|blockquote|h[1-6r]|t(able|[rdh]|head|body|foot|extarea)|form|object|center|marquee|address|applet|iframe|figure|figcaption|d[ltd]|script|noscript|map|button|fieldset|style)\b,S",
 			$pi, $r)) {
 				$pos = strpos($pi, $r[0]);
-				#var_dump(substr($p,0,$pos));
-				if (($pc = strpos($pi, ">"))!==false){
-					$pc++;
-					while($pc<$pos AND in_array($p{$pc},array("\n"," ","\t"))) $pc++;
-				}
-				#var_dump(substr($p,0,$pc) . str_replace("\n", _AUTOBR."\n", rtrim(substr($p,$pc,$pos-$pc))));
-				$t .= "<p " . substr($p,0,$pc) . str_replace("\n", _AUTOBR."\n", rtrim(substr($p,$pc,$pos-$pc)))."</p>\n".substr($p,$pos);
+				$t .= "<p " . str_replace("\n", _AUTOBR."\n", rtrim(substr($p,0,$pos)))."</p>\n".substr($p,$pos);
 			} else {
 				$t .= '<p '.$p;
 			}
@@ -44,9 +38,9 @@ function fermer_para_mano(&$t) {
 
 	if (_AUTOBR) {
 		$t = str_replace(_AUTOBR."\n"."<br", "<br", $t); #manque /i
-		$reg = ',(<br\b[^>]*>\s*)'.preg_quote(_AUTOBR."\n", ',').",iS";
+		$reg = ',(<(p|br)\b[^>]*>\s*)'.preg_quote(_AUTOBR."\n", ',').",iS";
 
-		$t = preg_replace($reg, '\1', $t);
+		$t = preg_replace($reg, '\1'."\n", $t);
 	}
 
 	return $t;

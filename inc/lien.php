@@ -80,8 +80,14 @@ function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='
 		$class = 'spip_ancre';
 	elseif (strncasecmp($lien,'mailto:',7)==0) # pseudo URL de mail
 		$class = "spip_mail";
-	elseif (strncmp($texte,'<html>',6)==0) # cf traiter_lien_explicite
-		$class = "spip_url spip_out";
+	elseif (strncmp($texte,'<html>',6)==0){ # cf traiter_lien_explicite
+		$class = "spip_url";
+		# spip_out sur les URLs externes
+		if (preg_match(',^\w+://,iS', $lien)
+		AND strncasecmp($lien, url_de_base(), strlen(url_de_base()))
+		)
+			$class .= " spip_out";
+	}
 	elseif (!$class) {
 		# spip_out sur les URLs externes
 		if (preg_match(',^\w+://,iS', $lien)

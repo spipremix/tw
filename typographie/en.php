@@ -44,6 +44,10 @@ function typographie_en($t) {
 	/* 4 */
 	$t = preg_replace('/Mr\.? /S', '$0~', $t);
 
+	if (strpos($t,'\~')!==false){
+		$t = str_replace('\~',"\x1\x14", $t);
+	}
+
 	if (strpos($t, '~') !== false)
 		$t = preg_replace("/ *~+ */S", "~", $t);
 
@@ -54,6 +58,10 @@ function typographie_en($t) {
 	}
 
 	$t = str_replace('~', '&nbsp;', $t);
+
+	if (strpos($t,"\x1")!==false){
+		$t = str_replace("\x1\x14", '~', $t);
+	}
 
 	return $t;
 }

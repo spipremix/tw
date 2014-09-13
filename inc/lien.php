@@ -17,20 +17,20 @@ include_spip('base/abstract_sql');
 /**
  * Production de la balise a+href à partir des raccourcis `[xxx->url]` etc.
  *
- * @note 
+ * @note
  *     Compliqué car c'est ici qu'on applique typo(),
  *     et en plus, on veut pouvoir les passer en pipeline
- * 
+ *
  * @see typo()
- * @param string $lien    
- * @param string $texte   
- * @param string $class   
- * @param string $title   
- * @param string $hlang   
- * @param string $rel     
- * @param string $connect 
- * @param array $env     
- * @return string          
+ * @param string $lien
+ * @param string $texte
+ * @param string $class
+ * @param string $title
+ * @param string $hlang
+ * @param string $rel
+ * @param string $connect
+ * @param array $env
+ * @return string
  */
 function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='', $connect='', $env=array()) {
 	static $u=null;
@@ -43,7 +43,7 @@ function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='
 	// - [{}->art2] => traduction en langue courante de l'art 2, sinon art 2
 	// s'applique a tout objet traduit
 	if ($hlang
-	AND $match = typer_raccourci($lien)) { 
+	AND $match = typer_raccourci($lien)) {
 		@list($type,,$id,,$args,,$ancre) = $match;
 		$trouver_table = charger_fonction('trouver_table', 'base');
 		$desc = $trouver_table(table_objet($type, $connect),$connect);
@@ -149,6 +149,10 @@ function expanser_liens($t, $connect='', $env=array())
 
 	$t = pipeline('pre_liens', $t);
 
+	if (strpos($t,'\[')!==false OR strpos($t,'\]')!==false){
+		$t = str_replace(array('\[','\]'),array("\x1\x5", "\x1\x6"), $t);
+	}
+
 	expanser_un_lien($connect,'init', $env);
 
 	if (strpos($t, '->') !== false)
@@ -157,6 +161,10 @@ function expanser_liens($t, $connect='', $env=array())
 	// on passe a traiter_modeles la liste des liens reperes pour lui permettre
 	// de remettre le texte d'origine dans les parametres du modele
 	$t = traiter_modeles($t, false, false, $connect, expanser_un_lien('','sources'), $env);
+
+	if (strpos($t,"\x1")!==false){
+		$t = str_replace(array("\x1\x5", "\x1\x6"), array('[',']'), $t);
+	}
 
  	$t = corriger_typo($t);
 
@@ -347,7 +355,7 @@ function virtuel_redirige($virtuel, $url=false){
 
 
 // Cherche un lien du type [->raccourci 123]
-// associe a une fonction generer_url_raccourci() definie explicitement 
+// associe a une fonction generer_url_raccourci() definie explicitement
 // ou implicitement par le jeu de type_urls courant.
 //
 // Valeur retournee selon le parametre $pour:
@@ -392,7 +400,7 @@ function traiter_lien_explicite ($ref, $texte='', $pour='url', $connect='', $ech
 		if (!$texte) $texte = $lien;
 		$lien = "mailto:".$lien;
 	}
-	
+
 	if ($pour == 'url') return $lien;
 
 	if ($pour == 'titre') return $texte;
@@ -565,8 +573,8 @@ function traiter_modeles($texte, $doublons=false, $echap='', $connect='', $liens
 				if (!is_null($liens))
 					$params = str_replace($liens[0], $liens[1], $params);
 			  $modele = inclure_modele($type, $id, $params, $lien, $connect, $env);
-				// en cas d'echec, 
-				// si l'objet demande a une url, 
+				// en cas d'echec,
+				// si l'objet demande a une url,
 				// creer un petit encadre vers elle
 				if ($modele === false) {
 					$modele = substr($texte,$a,$cherche);
@@ -664,7 +672,7 @@ function glossaire_std($terme)
 	static $pcre = NULL;
 
 	if ($pcre === NULL) {
-		$pcre = isset($GLOBALS['meta']['pcre_u']) 
+		$pcre = isset($GLOBALS['meta']['pcre_u'])
 		? $GLOBALS['meta']['pcre_u']
 		  : '';
 		if (strpos($url_glossaire_externe, "%s") === false)
@@ -676,7 +684,7 @@ function glossaire_std($terme)
 				$GLOBALS['url_glossaire_externe']);
 
 	$terme = rawurlencode(preg_replace(',\s+,'.$pcre, '_', $terme));
-	
+
 	return  str_replace("%s", $terme, $glosateur);
 }
 

@@ -73,6 +73,10 @@ function typographie_fr($t) {
 	/* 4 */
 	$t = preg_replace('/&#171;|M(?:M?\.|mes?|r\.?|&#176;) |[nN]&#176; /S', '$0~', $t);
 
+	if (strpos($t,'\~')!==false){
+		$t = str_replace('\~',"\x1\x14", $t);
+	}
+
 	if (strpos($t, '~') !== false)
 		$t = preg_replace("/ *~+ */S", "~", $t);
 
@@ -84,6 +88,10 @@ function typographie_fr($t) {
 
 	$t = preg_replace(',(' ._PROTOCOLES_STD . ')~((://[^"\'\s\[\]\}\)<>]+)~([?]))?,S', '$1$3$4', $t);
 	$t = str_replace('~', '&nbsp;', $t);
+
+	if (strpos($t,"\x1")!==false){
+		$t = str_replace("\x1\x14", '~', $t);
+	}
 
 	return $t;
 }

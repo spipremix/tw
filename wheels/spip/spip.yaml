@@ -135,7 +135,7 @@ paragraphes:
 quote:
   # raccourci <quote>
   match: ['<quote>', '</quote>']
-  replace: ['<blockquote class="spip"><p>', '</blockquote><p>']
+  replace: ['<blockquote class="spip"><p>', '</blockquote>']
   if_str: '<quote>'
   type: str
 

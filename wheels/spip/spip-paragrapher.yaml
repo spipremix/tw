@@ -86,7 +86,12 @@ suppr-para-vides:
 
 renommer-para-normaux:
     # Renommer les paragraphes normaux
-    match: "<p >"
+    match: "\n<p >"
     replace: "\n<p>"
     type: str
 
+renommer-para-normaux-nl:
+    # Renommer les paragraphes normaux
+    match: "<p >"
+    replace: "\n<p>"
+    type: str

@@ -40,13 +40,13 @@ function fermer_para_mano(&$t) {
 		}
 	}
 
+	if (strpos($t,"<br-li/>")!==false){
+		$t = str_replace("<br-li/></li>","</li>",$t); // pour respecter les non-retour lignes avant </li>
+		$t = str_replace("<br-li/><ul>","<ul>",$t); // pour respecter les non-retour lignes avant <ul>
+		$t = str_replace("<br-li/>","\n",$t);
+	}
 	if (_AUTOBR) {
 		$t = str_replace(_AUTOBR."\n"."<br", "\n<br", $t); #manque /i
-		if (strpos($t,"<br-li/>")){
-			$t = str_replace("<br-li/></li>","</li>",$t); // pour respecter les non-retour lignes avant </li>
-			$t = str_replace("<br-li/><ul>","<ul>",$t); // pour respecter les non-retour lignes avant <ul>
-			$t = str_replace("<br-li/>","\n",$t);
-		}
 		$reg = ',(<(p|br|li)\b[^>]*>\s*)'.preg_quote(_AUTOBR."\n", ',').",iS";
 		$t = preg_replace($reg, '\1'."\n", $t);
 	}

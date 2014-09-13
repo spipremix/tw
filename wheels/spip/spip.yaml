@@ -108,6 +108,14 @@ intertitres:
   if_str: '{{{'
   type: str
 
+gras-vide:
+  # faux raccourcis vides en {{}}
+  # echappes
+  match: '{{}}'
+  replace: "\x1\x1\x1\x1\x1\x2\x1\x2"
+  type: str
+  if_str: '{{'
+
 gras:
   # raccourcis en {{..}}
   # strong
@@ -116,9 +124,17 @@ gras:
   type: str
   if_str: '{{'
 
+italiques-vide:
+  # faux raccourcis vides en {}
+  # echappes
+  match: '{}'
+  replace: "\x1\x1\x1\x2"
+  type: str
+  if_str: '{'
+
 italiques:
   # raccourcis en {..}
-  # strong
+  # i
   match: ['{', '}']
   replace: ['<i>', '</i>']
   type: str

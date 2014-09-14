@@ -72,6 +72,11 @@ supprimer-stop-p:
 #    replace: "$1"
 #    disabled: Y
 
+suppr-para-presque-vides:
+    # Supprimer les <p xx></xx></p> (ne contiennent qu'une balise fermante)
+    match: ",<p [^>]*>(</\w+>)</p>,S"
+    replace: "$1"
+
 suppr-para-vides:
     # Supprimer les <p xx></p> vides
     match: ",<p [^>]*>\s*</p>\s*,S"

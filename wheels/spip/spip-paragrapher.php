@@ -17,7 +17,7 @@ if (!defined('_ECRIRE_INC_VERSION')) return;
  * @return string
  */
 function fermer_para_mano(&$t) {
-	# match: ",<p (.*)<(/?)(STOP P|div|pre|ul|ol|li|blockquote|h[1-6r]|t(able|[rdh]|head|body|foot|extarea)|form|object|center|marquee|address|applet|iframe|figure|figcaption|d[ltd]|script|noscript|map|button|fieldset|style)\b,UimsS"
+	# match: ",<p (.*)<(/?)(stop p|div|section|pre|ul|ol|li|article|aside|blockquote|h[1-6r]|hgroup|header|t(able|[rdh]|head|body|foot|extarea)|footer|form|object|nav|center|marquee|address|applet|iframe|fig(ure|caption)|d[ltd]|script|noscript|map|button|fieldset|style)\b,UimsS"
 	# replace: "\n<p "+trim($1)+"</p>\n<$2$3"
 
 	foreach (array('<p '=>"</p>\n",'<li'=>"<br-li/>") as $cut=>$close){
@@ -28,7 +28,7 @@ function fermer_para_mano(&$t) {
 				else {
 					$pi = strtolower($p);
 					if (preg_match(
-					",</?(?:stop p|div|pre|ul|ol|li|blockquote|h[1-6r]|t(able|[rdh]|head|body|foot|extarea)|form|object|center|marquee|address|applet|iframe|figure|figcaption|d[ltd]|script|noscript|map|button|fieldset|style)\b,S",
+						",</?(?:stop p|div|section|pre|ul|ol|li|article|aside|blockquote|h[1-6r]|hgroup|header|t(able|[rdh]|head|body|foot|extarea)|footer|form|object|nav|center|marquee|address|applet|iframe|fig(ure|caption)|d[ltd]|script|noscript|map|button|fieldset|style)\b,S",
 					$pi, $r)) {
 						$pos = strpos($pi, $r[0]);
 						$t .= $cut . str_replace("\n", _AUTOBR."\n", ($close?rtrim(substr($p,0,$pos)):substr($p,0,$pos))). $close . substr($p,$pos);

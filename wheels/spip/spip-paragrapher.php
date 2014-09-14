@@ -8,6 +8,26 @@
 
 if (!defined('_ECRIRE_INC_VERSION')) return;
 
+if (!defined('_BALISES_BLOCS')) define('_BALISES_BLOCS',
+	'address|applet|article|aside|blockquote|button|center|d[ltd]|div|fieldset|fig(ure|caption)|footer|form|h[1-6r]|hgroup|head|header|iframe|li|map|marquee|nav|noscript|object|ol|pre|section|t(able|[rdh]|body|foot|extarea)|ul|script|style'
+);
+
+/**
+ * Callback de detection des liens qui contiennent des blocks :
+ * dans ce cas il faut traiter le <a> comme un quasi block et fermer/ouvrir les <p> autour du <a>
+ *
+ * @param string $t
+ * @return string
+ */
+function detecter_liens_blocs(&$t){
+
+	// si une balise bloc est dans le liens, on y a aussi ajoute un <p>, il suffit donc de detecter ce dernier
+	if (strpos($t[2],"<p>")!==false){
+		return "<STOP P>".$t[1]."<p>".$t[2]."</p>".$t[3]."\n<p>";
+	}
+	return $t[0];
+}
+
 /**
  * Callback fermer-para-mano
  * 
@@ -28,7 +48,7 @@ function fermer_para_mano(&$t) {
 				else {
 					$pi = strtolower($p);
 					if (preg_match(
-						",</?(?:stop p|address|applet|article|aside|blockquote|button|center|d[ltd]|div|fieldset|fig(ure|caption)|footer|form|h[1-6r]|hgroup|head|header|iframe|li|map|marquee|nav|noscript|object|ol|pre|section|t(able|[rdh]|body|foot|extarea)|ul|script|style)\b,S",
+						",</?(?:stop p|"._BALISES_BLOCS.")\b,S",
 					$pi, $r)) {
 						$pos = strpos($pi, $r[0]);
 						$t .= $cut . str_replace("\n", _AUTOBR."\n", ($close?rtrim(substr($p,0,$pos)):substr($p,0,$pos))). $close . substr($p,$pos);

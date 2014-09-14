@@ -19,6 +19,14 @@ toujours-ouvrir:
     match: ",</(?:address|applet|article|aside|blockquote|button|center|d[ltd]|div|fieldset|fig(ure|caption)|footer|form|h[1-6r]|hgroup|head|header|iframe|li|map|marquee|nav|noscript|object|ol|pre|section|t(able|[rdh]|body|foot|extarea)|ul|script|style)[^>]*>\s*?,UimsS"
     replace: "$0<p>"
 
+liens-block:
+    # en HTML5, les <a> peuvent contenir une balise block
+    if_str: "</a>"
+    type: preg
+    match: ",(<a\s[^>]*>)(.*)(</a>),Uims"
+    is_callback: Y
+    replace: detecter_liens_blocs
+
 li-ouvrir:
     # toujours ouvrir un parapgraphe quand on ouvre une liste ?
     # desactive
@@ -73,8 +81,8 @@ supprimer-stop-p:
 #    disabled: Y
 
 suppr-para-presque-vides:
-    # Supprimer les <p xx></xx></p> (ne contiennent qu'une balise fermante)
-    match: ",<p [^>]*>(</\w+>)</p>,S"
+    # Supprimer les <p xx></xx></p> (ne contiennent qu'une balise ouvrante/fermante)
+    match: ",<p [^>]*>(<(?:/\w+|\w+[^>]*[^/])>)</p>,S"
     replace: "$1"
 
 suppr-para-vides:
@@ -91,12 +99,6 @@ suppr-para-vides:
 
 renommer-para-normaux:
     # Renommer les paragraphes normaux
-    match: "\n<p >"
-    replace: "\n<p>"
-    type: str
-
-renommer-para-normaux-nl:
-    # Renommer les paragraphes normaux
-    match: "<p >"
-    replace: "\n<p>"
+    match: ["\n<p >", "<p >"]
+    replace: ["\n<p>", "\n<p>"]
     type: str

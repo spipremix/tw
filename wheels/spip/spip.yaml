@@ -2,6 +2,13 @@
     #
     # Si on nomme une regle, elle devient surchargeable
 
+math:
+  if_str: "<math>"
+  type: all
+  is_callback: y
+  replace: "replace_math"
+  priority: -50 # en tout premier : le contenu des formules math ne doit pas etre modifie
+
 traiter_retours_chariots_1:
   # Harmonise les retours chariots et mange les paragraphes html
   if_chars: "\r"

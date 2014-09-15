@@ -8,9 +8,22 @@
 
 if (!defined('_ECRIRE_INC_VERSION')) return;
 
-
-
 include_spip('inc/texte');
+
+/**
+ * Callback pour les <math></math>
+ * Gestion du TeX
+ *
+ * @param string $t
+ * @return string
+ */
+function replace_math($t) {
+	if (!function_exists('traiter_math'))
+		include_spip('inc/math');
+
+	$t = traiter_math($t, '');
+	return $t;
+}
 
 /**
  * Callback pour la puce qui est définissable/surchargeable

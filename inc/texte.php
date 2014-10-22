@@ -591,6 +591,10 @@ function traiter_raccourcis($t, $show_autobr = false) {
 	if ($mes_notes)
 		$notes($mes_notes,'traiter',$ignorer_autobr);
 
+	if (_AUTOBR and !function_exists('aide_lang_dir')) {
+		include_spip('inc/aider');
+	}
+
 	// hack2: wrap des autobr dans l'espace prive, pour affichage css
 	// car en css on ne sait pas styler l'element BR
 	if ($ignorer_autobr AND _AUTOBR) {

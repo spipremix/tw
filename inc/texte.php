@@ -63,6 +63,8 @@ function echappe_js($t) {
 	}
 	catch (Exception $e){
 		erreur_squelette($e->getMessage());
+		// sanitizer le contenu methode brute, puisqu'on a pas fait mieux
+		$t = textebrut($t);
 	}
 	return $t;
 }
@@ -152,6 +154,8 @@ function interdire_scripts($arg) {
 	}
 	catch (Exception $e){
 		erreur_squelette($e->getMessage());
+		// sanitizer le contenu methode brute, puisqu'on a pas fait mieux
+		$t = textebrut($arg);
 	}
 
 	// Reinserer les echappements des modeles

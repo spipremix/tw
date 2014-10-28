@@ -58,7 +58,13 @@ function echappe_js($t) {
 			SPIPTextWheelRuleset::loader($GLOBALS['spip_wheels']['echappe_js'])
 		);
 
-	return $wheel->text($t);
+	try {
+		$t = $wheel->text($t);
+	}
+	catch (Exception $e){
+		erreur_squelette($e->getMessage());
+	}
+	return $t;
 }
 
 
@@ -90,7 +96,13 @@ function paragrapher($t, $toujours_paragrapher = null) {
 		$wheel[$toujours_paragrapher] = new TextWheel($ruleset);
 	}
 
-	return $wheel[$toujours_paragrapher]->text($t);
+	try {
+		$t = $wheel[$toujours_paragrapher]->text($t);
+	}
+	catch (Exception $e){
+		erreur_squelette($e->getMessage());
+	}
+	return $t;
 }
 
 /**
@@ -135,7 +147,12 @@ function interdire_scripts($arg) {
 		$wheel[$GLOBALS['filtrer_javascript']] = new TextWheel($ruleset);
 	}
 
-	$t = $wheel[$GLOBALS['filtrer_javascript']]->text($arg);
+	try {
+		$t = $wheel[$GLOBALS['filtrer_javascript']]->text($arg);
+	}
+	catch (Exception $e){
+		erreur_squelette($e->getMessage());
+	}
 
 	// Reinserer les echappements des modeles
 	if (defined('_PROTEGE_JS_MODELES'))
@@ -478,7 +495,14 @@ function traiter_listes ($t) {
 			SPIPTextWheelRuleset::loader($GLOBALS['spip_wheels']['listes'])
 		);
 
-	return $wheel->text($t);
+	try {
+		$t = $wheel->text($t);
+	}
+	catch (Exception $e){
+		erreur_squelette($e->getMessage());
+	}
+
+	return $t;
 }
 
 
@@ -583,7 +607,12 @@ function traiter_raccourcis($t, $show_autobr = false) {
 	// Gerer les notes (ne passe pas dans le pipeline)
 	list($t, $mes_notes) = $notes($t);
 
-	$t = $wheel[$key]->text($t);
+	try {
+		$t = $wheel[$key]->text($t);
+	}
+	catch (Exception $e){
+		erreur_squelette($e->getMessage());
+	}
 
 	// Appeler les fonctions de post-traitement
 	$t = pipeline('post_propre', $t);

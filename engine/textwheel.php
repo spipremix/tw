@@ -357,9 +357,13 @@ class TextWheel {
 	 * @param mixed $replace
 	 * @param string $t
 	 * @param int $count
+	 * @throws Exception
 	 */
 	protected static function replace_preg(&$match,&$replace,&$t,&$count){
 		$t = preg_replace($match, $replace, $t, -1, $count);
+		if (is_null($t)){
+			throw new Exception('Memory error, increase pcre.backtrack_limit in php.ini');
+		}
 	}
 
 	/**
@@ -368,9 +372,13 @@ class TextWheel {
 	 * @param mixed $replace
 	 * @param string $t
 	 * @param int $count
+	 * @throws Exception
 	 */
 	protected static function replace_preg_cb(&$match,&$replace,&$t,&$count){
 		$t = preg_replace_callback($match, $replace, $t, -1, $count);
+		if (is_null($t)){
+			throw new Exception('Memory error, increase pcre.backtrack_limit in php.ini');
+		}
 	}
 
 

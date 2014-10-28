@@ -40,9 +40,11 @@
               replace: tw_liste_close
               is_callback: Y
 
--
+# Feu les dl/dt/dd via -? -! cf http://core.spip.org/issues/1934
+definitions-disabled:
   if_match: "/\n-(&nbsp;)?[\?!]\s/S"
   type: all
+  disabled: Y
   is_wheel: Y
   replace:
     listes-decoupe-para2:

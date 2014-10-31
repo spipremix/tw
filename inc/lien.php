@@ -34,7 +34,7 @@ include_spip('base/abstract_sql');
  */
 function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='', $connect='', $env=array()) {
 	static $u=null;
-	if (!$u) $u=url_de_base();
+	if (!$u) $u = url_de_base();
 	$typo = false;
 
 	// Si une langue est demandee sur un raccourci d'article, chercher
@@ -42,85 +42,112 @@ function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='
 	// - [{en}->art2] => traduction anglaise de l'article 2, sinon art 2
 	// - [{}->art2] => traduction en langue courante de l'art 2, sinon art 2
 	// s'applique a tout objet traduit
-	if ($hlang
-	AND $match = typer_raccourci($lien)) {
+	if (
+		$hlang
+		and $match = typer_raccourci($lien)
+	) {
 		@list($type,,$id,,$args,,$ancre) = $match;
 		$trouver_table = charger_fonction('trouver_table', 'base');
 		$desc = $trouver_table(table_objet($type, $connect),$connect);
-		if ($desc
-			AND $id_table_objet = $desc['key']['PRIMARY KEY']) {
+		if (
+			$desc
+			and $id_table_objet = $desc['key']['PRIMARY KEY']
+		) {
 			$table_objet_sql = $desc['table'];
-			if ($row=sql_fetsel('*', $table_objet_sql, "$id_table_objet=".intval($id))
-				AND isset($row['id_trad'])
-				AND isset($row['lang'])
-				AND $id_dest = sql_getfetsel($id_table_objet, $table_objet_sql,"id_trad=".intval($row['id_trad'])." AND lang=" . sql_quote($hlang))
-				AND objet_test_si_publie($type,$id_dest)
-			)
+			if (
+				$row=sql_fetsel('*', $table_objet_sql, "$id_table_objet=".intval($id))
+				and isset($row['id_trad'])
+				and isset($row['lang'])
+				and $id_dest = sql_getfetsel($id_table_objet, $table_objet_sql,"id_trad=".intval($row['id_trad'])." AND lang=" . sql_quote($hlang))
+				and objet_test_si_publie($type,$id_dest)
+			) {
 				$lien = "$type$id_dest";
-			else
+			}
+			else {
 				$hlang = '';
+			}
 		}
-		else
+		else {
 			$hlang = '';
+		}
 	}
 
-	$mode = ($texte AND $class) ? 'url' : 'tout';
+	$mode = ($texte and $class) ? 'url' : 'tout';
 	$lang = '';
 	$lien = calculer_url($lien, $texte, $mode, $connect);
 	if ($mode === 'tout') {
 		$texte = $lien['titre'];
-		if (!$class AND isset($lien['class'])) $class = $lien['class'];
-		$lang = isset($lien['lang']) ?$lien['lang'] : '';
+		if (!$class and isset($lien['class'])) {
+			$class = $lien['class'];
+		}
+		$lang = isset($lien['lang']) ? $lien['lang'] : '';
 		$mime = isset($lien['mime']) ? " type='".$lien['mime']."'" : "";
 		$lien = $lien['url'];
 	}
 
 	$lien = trim($lien);
-	if (strncmp($lien,"#",1) == 0)  # ancres pures (internes a la page)
+	if (strncmp($lien, "#", 1) == 0) {  # ancres pures (internes a la page)
 		$class = 'spip_ancre';
-	elseif (strncasecmp($lien,'mailto:',7)==0) # pseudo URL de mail
+	}
+	elseif (strncasecmp($lien,'mailto:',7)==0) { # pseudo URL de mail
 		$class = "spip_mail";
-	elseif (strncmp($texte,'<html>',6)==0){ # cf traiter_lien_explicite
+	}
+	elseif (strncmp($texte,'<html>',6)==0) { # cf traiter_lien_explicite
 		$class = "spip_url";
 		# spip_out sur les URLs externes
-		if (preg_match(',^\w+://,iS', $lien)
-		AND strncasecmp($lien, url_de_base(), strlen(url_de_base()))
-		)
+		if (
+			preg_match(',^\w+://,iS', $lien)
+			and strncasecmp($lien, url_de_base(), strlen(url_de_base()))
+		) {
 			$class .= " spip_out";
+		}
 	}
 	elseif (!$class) {
 		# spip_out sur les URLs externes
-		if (preg_match(',^\w+://,iS', $lien)
-		AND strncasecmp($lien, url_de_base(), strlen(url_de_base()))
-		)
+		if (
+			preg_match(',^\w+://,iS', $lien)
+			and strncasecmp($lien, url_de_base(), strlen(url_de_base()))
+		) {
 			$class = "spip_out"; # si pas spip_in|spip_glossaire
+		}
 	}
-	if ($class)
+	if ($class) {
 		$class=" class='$class'";
+	}
 
 	// Si l'objet n'est pas de la langue courante, on ajoute hreflang
-	if (!$hlang AND isset($lang) AND $lang!==$GLOBALS['spip_lang'])
+	if (!$hlang and isset($lang) and $lang!==$GLOBALS['spip_lang']) {
 		$hlang = $lang;
+	}
 
 	$lang = ($hlang ? " hreflang='$hlang'" : '');
 
-	if ($title)
+	if ($title) {
 		$title = ' title="'.attribut_html($title).'"';
-	else
+	}
+	else {
 		$title = ''; // $title peut etre 'false'
+	}
+	
 	// rel=external pour les liens externes
-	if ((strncmp($lien,'http://',7)==0 OR strncmp($lien,'https://',8)==0)
-	  AND strncmp("$lien/", $u ,strlen($u))!=0)
+	if (
+		(strncmp($lien,'http://',7)==0 or strncmp($lien,'https://',8)==0)
+		and strncmp("$lien/", $u ,strlen($u))!=0
+	) {
 		$rel = trim("$rel external");
-	if ($rel) $rel = " rel='$rel'";
+	}
+	if ($rel) {
+		$rel = " rel='$rel'";
+	}
 
 	// si pas de modele dans le texte du lien, on peut juste passer typo sur le texte, c'est plus rapide
 	// les rares cas de lien qui encapsule un modele passe en dessous, c'est plus lent
-	if (traiter_modeles($texte, false, '', $connect, null, $env)==$texte){
+	if (traiter_modeles($texte, false, '', $connect, null, $env) == $texte) {
 		$texte = typo($texte, true, $connect, $env);
 		$lien = "<a href=\"".str_replace('"', '&quot;', $lien)."\"$class$lang$title$rel".(isset($mime)?$mime:'').">$texte</a>";
 		return $lien;
 	}
+	
 	# ceci s'execute heureusement avant les tableaux et leur "|".
 	# Attention, le texte initial est deja echappe mais pas forcement
 	# celui retourne par calculer_url.
@@ -145,7 +172,7 @@ function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='
  * @param array $args
  *   Tableau des arguments disponibles pour générer le lien :
  *   - texte : texte du lien, seul argument qui n'est pas un attribut
- * 	 - href
+ *   - href
  *   - name
  *   - etc, tout autre attribut supplémentaire…
  * @return string

@@ -137,6 +137,56 @@ function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='
 	return $res;
 }
 
+/**
+ * Générer le HTML d'un lien quelconque
+ * 
+ * Cette fonction génère une balise `<a>` suivant de multiples arguments.
+ *
+ * @param array $args
+ *   Tableau des arguments disponibles pour générer le lien :
+ *   - texte : texte du lien, seul argument qui n'est pas un attribut
+ * 	 - href
+ *   - name
+ *   - etc, tout autre attribut supplémentaire…
+ * @return string
+ *   Retourne une balise HTML de lien ou une chaîne vide.
+ */
+function balise_a($args=array()){
+	$balise_a = '';
+	
+	// Il faut soit au minimum un href OU un name pour réussir à générer quelque chose
+	if (is_array($args) and (isset($args['href']) or isset($args['name']))) {
+		include_spip('inc/filtres');
+		$texte = '';
+		
+		// S'il y a un texte, on le récupère et on l'enlève des attributs
+		if (isset($args['texte']) and is_scalar($args['texte'])) {
+			$texte = $args['texte'];
+			unset($args['texte']);
+		}
+		// Si on a un href sans texte, on en construit un avec l'URL
+		elseif (isset($args['href']) and is_scalar($args['href'])) {
+			static $lien_court;
+			if (!$lien_court) {
+				$lien_court = charger_fonction('lien_court', 'inc');
+			}
+			$texte = quote_amp($lien_court($args['href']));
+		}
+		
+		// Il ne reste normalement plus que des attributs, on les ajoute à la balise
+		$balise_a = '<a';
+		foreach ($args as $attribut => $valeur) {
+			if (is_scalar($valeur) and !empty($valeur)) {
+				$balise_a .= ' '.$attribut.'="'.attribut_html($valeur).'"';
+			}
+		}
+		// Puis on ajoute le texte
+		$balise_a .= '>'.$texte.'</a>';
+	}
+	
+	return $balise_a;
+}
+
 // Regexp des raccourcis, aussi utilisee pour la fusion de sauvegarde Spip
 // Laisser passer des paires de crochets pour la balise multi
 // mais refuser plus d'imbrications ou de mauvaises imbrications

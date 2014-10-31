@@ -221,37 +221,36 @@ function balise_a($args=array()){
 define('_RACCOURCI_LIEN', "/\[([^][]*?([[][^]>-]*[]][^][]*)*)->(>?)([^]]*)\]/msS");
 
 // http://doc.spip.org/@expanser_liens
-function expanser_liens($t, $connect='', $env=array())
-{
-
+function expanser_liens($t, $connect='', $env=array()) {
 	$t = pipeline('pre_liens', $t);
 
-	if (strpos($t,'\[')!==false OR strpos($t,'\]')!==false){
+	if (strpos($t, '\[') !== false or strpos($t, '\]') !== false) {
 		$t = str_replace(array('\[','\]'),array("\x1\x5", "\x1\x6"), $t);
 	}
 
 	expanser_un_lien($connect,'init', $env);
 
-	if (strpos($t, '->') !== false)
+	if (strpos($t, '->') !== false) {
 		$t = preg_replace_callback (_RACCOURCI_LIEN, 'expanser_un_lien',$t);
+	}
 
 	// on passe a traiter_modeles la liste des liens reperes pour lui permettre
 	// de remettre le texte d'origine dans les parametres du modele
-	$t = traiter_modeles($t, false, false, $connect, expanser_un_lien('','sources'), $env);
+	$t = traiter_modeles($t, false, false, $connect, expanser_un_lien('', 'sources'), $env);
 
-	if (strpos($t,"\x1")!==false){
-		$t = str_replace(array("\x1\x5", "\x1\x6"), array('[',']'), $t);
+	if (strpos($t, "\x1") !== false) {
+		$t = str_replace(array("\x1\x5", "\x1\x6"), array('[', ']'), $t);
 	}
 
  	$t = corriger_typo($t);
 
-	$t = expanser_un_lien($t,'reinsert');
+	$t = expanser_un_lien($t, 'reinsert');
 
 	return $t;
 }
 
 
-function expanser_un_lien($reg, $quoi='echappe', $env=null){
+function expanser_un_lien($reg, $quoi='echappe', $env=null) {
 	static $pile = array();
 	static $inserts;
 	static $sources;
@@ -261,12 +260,15 @@ function expanser_un_lien($reg, $quoi='echappe', $env=null){
 	static $connect='';
 	static $contexte = array();
 
-	switch ($quoi){
+	switch ($quoi) {
 		case 'init':
-			if (!$lien) $lien = charger_fonction('lien', 'inc');
-			if (!is_null($env))
+			if (!$lien) {
+				$lien = charger_fonction('lien', 'inc');
+			}
+			if (!is_null($env)) {
 				$contexte = $env;
-			array_push($pile,array($inserts,$sources,$regs,$connect,$k));
+			}
+			array_push($pile, array($inserts, $sources, $regs, $connect, $k));
 			$inserts = $sources = $regs = array();
 			$connect = $reg; // stocker le $connect pour les appels a inc_lien_dist
 			$k=0;
@@ -281,11 +283,11 @@ function expanser_un_lien($reg, $quoi='echappe', $env=null){
 			$r = end($reg);
 			// la mise en lien automatique est passee par la a tort !
 			// corrigeons pour eviter d'avoir un <a...> dans un href...
-			if (strncmp($r,'<a',2)==0){
+			if (strncmp($r, '<a', 2) == 0) {
 				$href = extraire_attribut($r, 'href');
 				// remplacons dans la source qui peut etre reinjectee dans les arguments
 				// d'un modele
-				$sources[$k] = str_replace($r,$href,$sources[$k]);
+				$sources[$k] = str_replace($r, $href, $sources[$k]);
 				// et prenons le href comme la vraie url a linker
 				$r = $href;
 			}
@@ -293,9 +295,10 @@ function expanser_un_lien($reg, $quoi='echappe', $env=null){
 			return $inserts[$k++];
 			break;
 		case 'reinsert':
-			if (count($inserts))
+			if (count($inserts)) {
 				$reg = str_replace($inserts, $regs, $reg);
-			list($inserts,$sources,$regs,$connect,$k) = array_pop($pile);
+			}
+			list($inserts, $sources, $regs, $connect, $k) = array_pop($pile);
 			return $reg;
 			break;
 		case 'sources':
@@ -307,20 +310,22 @@ function expanser_un_lien($reg, $quoi='echappe', $env=null){
 // Meme analyse mais pour eliminer les liens
 // et ne laisser que leur titre, a expliciter si ce n'est fait
 // http://doc.spip.org/@nettoyer_raccourcis_typo
-function nettoyer_raccourcis_typo($texte, $connect='')
-{
+function nettoyer_raccourcis_typo($texte, $connect='') {
 	$texte = pipeline('nettoyer_raccourcis_typo',$texte);
 
-	if (preg_match_all(_RACCOURCI_LIEN, $texte, $regs, PREG_SET_ORDER))
+	if (preg_match_all(_RACCOURCI_LIEN, $texte, $regs, PREG_SET_ORDER)) {
 		include_spip('inc/texte');
 		foreach ($regs as $reg) {
 			list ($titre,,)= traiter_raccourci_lien_atts($reg[1]);
 			if (!$titre) {
 				$match = typer_raccourci($reg[count($reg)-1]);
 				@list($type,,$id,,,,) = $match;
+				
 				if ($type) {
 					$url = generer_url_entite($id,$type,'','',true);
-					if (is_array($url)) list($type, $id) = $url;
+					if (is_array($url)) {
+						list($type, $id) = $url;
+					}
 					$titre = traiter_raccourci_titre($id, $type, $connect);
 				}
 				$titre = $titre ? $titre['titre'] : $match[0];
@@ -328,12 +333,13 @@ function nettoyer_raccourcis_typo($texte, $connect='')
 			$titre = corriger_typo(supprimer_tags($titre));
 			$texte = str_replace($reg[0], $titre, $texte);
 		}
+	}
 
 	// supprimer les ancres
-	$texte = preg_replace(_RACCOURCI_ANCRE,"",$texte);
+	$texte = preg_replace(_RACCOURCI_ANCRE, "", $texte);
 
 	// supprimer les notes
-	$texte = preg_replace(",[[][[]([^]]|[]][^]])*[]][]],UimsS","",$texte);
+	$texte = preg_replace(",[[][[]([^]]|[]][^]])*[]][]],UimsS", "", $texte);
 
 	// supprimer les codes typos
 	$texte = str_replace(array('}','{'), '', $texte);
@@ -357,44 +363,52 @@ define('_RACCOURCI_ATTRIBUTS', '/^((?:[^[]*?(?:\[[^]]*\])?)*?)([|]([^<>]*?))?([{
 
 // http://doc.spip.org/@traiter_raccourci_lien_atts
 function traiter_raccourci_lien_atts($texte) {
-
 	$bulle = $hlang = false;
+	
 	// title et hreflang donnes par le raccourci ?
-	if (strpbrk($texte, "|{") !== false AND
-	  preg_match(_RACCOURCI_ATTRIBUTS, $texte, $m)) {
-
+	if (
+		strpbrk($texte, "|{") !== false
+		and preg_match(_RACCOURCI_ATTRIBUTS, $texte, $m)
+	) {
 		$n =count($m);
+		
 		// |infobulle ?
 		if ($n > 2) {
 			$bulle = $m[3];
+			
 			// {hreflang} ?
 			if ($n > 4) {
-			// si c'est un code de langue connu, on met un hreflang
+				// si c'est un code de langue connu, on met un hreflang
 				if (traduire_nom_langue($m[5]) <> $m[5]) {
 					$hlang = $m[5];
-				} elseif (!$m[5]) {
+				}
+				elseif (!$m[5]) {
 					$hlang = test_espace_prive() ?
 					  $GLOBALS['lang_objet'] : $GLOBALS['spip_lang'];
 				// sinon c'est un italique ou un gras dans le title ou dans le texte du lien
-				} else {
-					if ($bulle)
-						$bulle .= $m[4];
-					else
-						$m[1] .= $m[2] . $m[4];
 				}
-
+				else {
+					if ($bulle) {
+						$bulle .= $m[4];
+					}
+					else {
+						$m[1] .= $m[2] . $m[4];
+					}
+				}
+			}
 			// S'il n'y a pas de hreflang sous la forme {}, ce qui suit le |
 			// est peut-etre une langue
-			} else if (preg_match('/^[a-z_]+$/', $m[3])) {
-			// si c'est un code de langue connu, on met un hreflang
-			// mais on laisse le title (c'est arbitraire tout ca...)
+			else if (preg_match('/^[a-z_]+$/', $m[3])) {
+				// si c'est un code de langue connu, on met un hreflang
+				// mais on laisse le title (c'est arbitraire tout ca...)
 				if (traduire_nom_langue($m[3]) <> $m[3]) {
-				  $hlang = $m[3];
+					$hlang = $m[3];
 				}
 			}
 		}
 		$texte = $m[1];
 	}
+	
 	if ($bulle) {
 		$bulle = nettoyer_raccourcis_typo($bulle);
 		$bulle = corriger_typo($bulle);
@@ -404,8 +418,8 @@ function traiter_raccourci_lien_atts($texte) {
 }
 
 define('_EXTRAIRE_DOMAINE', '/^(?:(?:[^\W_]((?:[^\W_]|-){0,61}[^\W_,])?\.)+[a-z0-9]{2,6}|localhost)\b/Si');
-
 define('_RACCOURCI_CHAPO', '/^(\W*)(\W*)(\w*\d+([?#].*)?)$/');
+
 /**
  * Fonction pour les champs virtuels de redirection qui peut etre:
  * 1. un raccourci Spip habituel (premier If) [texte->TYPEnnn]
@@ -421,11 +435,14 @@ define('_RACCOURCI_CHAPO', '/^(\W*)(\W*)(\w*\d+([?#].*)?)$/');
  * @param bool $url
  * @return string
  */
-function virtuel_redirige($virtuel, $url=false){
+function virtuel_redirige($virtuel, $url=false) {
 	if (!strlen($virtuel)) return '';
-	if (!preg_match(_RACCOURCI_LIEN, $virtuel, $m))
-		if (!preg_match(_RACCOURCI_CHAPO, $virtuel, $m))
-			return $virtuel;
+	if (
+		!preg_match(_RACCOURCI_LIEN, $virtuel, $m)
+		and !preg_match(_RACCOURCI_CHAPO, $virtuel, $m)
+	) {
+		return $virtuel;
+	}
 
 	return !$url ? $m[3] : traiter_lien_implicite($m[3]);
 }
@@ -450,10 +467,10 @@ function calculer_url ($ref, $texte='', $pour='url', $connect='', $echappe_typo 
 define('_EXTRAIRE_LIEN', ",^\s*(http:?/?/?|mailto:?)\s*$,iS");
 
 // http://doc.spip.org/@traiter_lien_explicite
-function traiter_lien_explicite ($ref, $texte='', $pour='url', $connect='', $echappe_typo = true)
-{
-	if (preg_match(_EXTRAIRE_LIEN, $ref))
+function traiter_lien_explicite ($ref, $texte='', $pour='url', $connect='', $echappe_typo = true) {
+	if (preg_match(_EXTRAIRE_LIEN, $ref)) {
 		return ($pour != 'tout') ? '' : array('','','','');
+	}
 
 	$lien = entites_html(trim($ref));
 
@@ -465,31 +482,41 @@ function traiter_lien_explicite ($ref, $texte='', $pour='url', $connect='', $ech
 		if (!$lien_court)
 			$lien_court = charger_fonction('lien_court', 'inc');
 		$texte = $lien_court($texte);
-		if ($echappe_typo){
+		if ($echappe_typo) {
 			$texte = "<html>".quote_amp($texte)."</html>";
 		}
 	}
 
 	// petites corrections d'URL
-	if (preg_match('/^www\.[^@]+$/S',$lien))
+	if (preg_match('/^www\.[^@]+$/S',$lien)) {
 		$lien = "http://".$lien;
+	}
 	else if (strpos($lien, "@") && email_valide($lien)) {
-		if (!$texte) $texte = $lien;
+		if (!$texte) {
+			$texte = $lien;
+		}
 		$lien = "mailto:".$lien;
 	}
 
-	if ($pour == 'url') return $lien;
+	if ($pour == 'url') {
+		return $lien;
+	}
 
-	if ($pour == 'titre') return $texte;
+	if ($pour == 'titre') {
+		return $texte;
+	}
 
 	return array('url' => $lien, 'titre' => $texte);
 }
 
-function liens_implicite_glose_dist($texte,$id,$type,$args,$ancre,$connect=''){
-	if (function_exists($f = 'glossaire_' . $ancre))
+function liens_implicite_glose_dist($texte, $id, $type, $args, $ancre, $connect=''){
+	if (function_exists($f = 'glossaire_' . $ancre)) {
 		$url = $f($texte, $id);
-	else
+	}
+	else {
 		$url = glossaire_std($texte);
+	}
+	
 	return $url;
 }
 
@@ -513,38 +540,66 @@ function liens_implicite_glose_dist($texte,$id,$type,$args,$ancre,$connect=''){
  * @param string $connect
  * @return array|bool|string
  */
-function traiter_lien_implicite ($ref, $texte='', $pour='url', $connect='')
-{
-	$cible = ($connect ? $connect : (isset($GLOBALS['lien_implicite_cible_public'])?$GLOBALS['lien_implicite_cible_public']:null));
-	if (!($match = typer_raccourci($ref))) return false;
+function traiter_lien_implicite($ref, $texte='', $pour='url', $connect='') {
+	$cible = ($connect ? $connect : (isset($GLOBALS['lien_implicite_cible_public']) ? $GLOBALS['lien_implicite_cible_public'] : null));
+	if (!($match = typer_raccourci($ref))) {
+		return false;
+	}
+	
 	@list($type,,$id,,$args,,$ancre) = $match;
-# attention dans le cas des sites le lien doit pointer non pas sur
-# la page locale du site, mais directement sur le site lui-meme
+	
+	# attention dans le cas des sites le lien doit pointer non pas sur
+	# la page locale du site, mais directement sur le site lui-meme
 	$url = '';
-	if ($f = charger_fonction("implicite_$type","liens",true))
+	if ($f = charger_fonction("implicite_$type","liens",true)) {
 		$url = $f($texte,$id,$type,$args,$ancre,$connect);
-	if (!$url)
-		$url = generer_url_entite($id,$type,$args,$ancre,$cible);
-	if (!$url) return false;
-	if (is_array($url)) {
-		@list($type,$id) = $url;
+	}
+	
+	if (!$url) {
 		$url = generer_url_entite($id,$type,$args,$ancre,$cible);
 	}
-	if ($pour === 'url') return $url;
+	
+	if (!$url) {
+		return false;
+	}
+	
+	if (is_array($url)) {
+		@list($type, $id) = $url;
+		$url = generer_url_entite($id, $type, $args, $ancre, $cible);
+	}
+	
+	if ($pour === 'url') {
+		return $url;
+	}
+	
 	$r = traiter_raccourci_titre($id, $type, $connect);
-	if ($r) $r['class'] =  ($type == 'site')?'spip_out':'spip_in';
-	if ($texte = trim($texte)) $r['titre'] = $texte;
-	if (!@$r['titre']) $r['titre'] =  _T($type) . " $id";
-	if ($pour=='titre') return $r['titre'];
+	if ($r) {
+		$r['class'] =  ($type == 'site')?'spip_out':'spip_in';
+	}
+	
+	if ($texte = trim($texte)) {
+		$r['titre'] = $texte;
+	}
+	
+	if (!@$r['titre']) {
+		$r['titre'] =  _T($type) . " $id";
+	}
+	
+	if ($pour == 'titre') {
+		return $r['titre'];
+	}
+	
 	$r['url'] = $url;
 
 	// dans le cas d'un lien vers un doc, ajouter le type='mime/type'
-	if ($type == 'document'
-	AND $mime = sql_getfetsel('mime_type', 'spip_types_documents',
+	if (
+		$type == 'document'
+		and $mime = sql_getfetsel('mime_type', 'spip_types_documents',
 			"extension IN (SELECT extension FROM spip_documents where id_document =".intval($id).")",
 			'','','','',$connect)
-	)
+	) {
 		$r['mime'] = $mime;
+	}
 
 	return $r;
 }
@@ -555,33 +610,64 @@ define('_RACCOURCI_URL', '/^\s*(\w*?)\s*(\d+)(\?(.*?))?(#([^\s]*))?\s*$/S');
 
 // http://doc.spip.org/@typer_raccourci
 function typer_raccourci ($lien) {
-	if (!preg_match(_RACCOURCI_URL, $lien, $match)) return array();
+	if (!preg_match(_RACCOURCI_URL, $lien, $match)) {
+		return array();
+	}
+	
 	$f = $match[1];
 	// valeur par defaut et alias historiques
-	if (!$f) $f = 'article';
-	else if ($f == 'art') $f = 'article';
-	else if ($f == 'br') $f = 'breve';
-	else if ($f == 'rub') $f = 'rubrique';
-	else if ($f == 'aut') $f = 'auteur';
-	else if ($f == 'doc' OR $f == 'im' OR $f == 'img' OR $f == 'image' OR $f == 'emb')
+	if (!$f) {
+		$f = 'article';
+	}
+	else if ($f == 'art') {
+		$f = 'article';
+	}
+	else if ($f == 'br') {
+		$f = 'breve';
+	}
+	else if ($f == 'rub') {
+		$f = 'rubrique';
+	}
+	else if ($f == 'aut') {
+		$f = 'auteur';
+	}
+	else if ($f == 'doc' OR $f == 'im' OR $f == 'img' OR $f == 'image' OR $f == 'emb') {
 		$f = 'document';
-	else if (preg_match('/^br..?ve$/S', $f)) $f = 'breve'; # accents :(
+	}
+	else if (preg_match('/^br..?ve$/S', $f)) {
+		$f = 'breve'; # accents :(
+	}
+	
 	$match[0] = $f;
 	return $match;
 }
 
 // Retourne le champ textuel associe a une cle primaire, et sa langue
-function traiter_raccourci_titre($id, $type, $connect=NULL)
-{
+function traiter_raccourci_titre($id, $type, $connect=NULL) {
 	$trouver_table = charger_fonction('trouver_table', 'base');
 	$desc = $trouver_table(table_objet($type));
-	if (!($desc AND $s = $desc['titre'])) return array();
+	
+	if (!($desc AND $s = $desc['titre'])) {
+		return array();
+	}
+	
 	$_id = $desc['key']['PRIMARY KEY'];
 	$r = sql_fetsel($s, $desc['table'], "$_id=$id", '','','','',$connect);
-	if (!$r) return array();
+	
+	if (!$r) {
+		return array();
+	}
+	
 	$r['titre'] = supprimer_numero($r['titre']);
-	if (!$r['titre']) $r['titre'] = $r['surnom'];
-	if (!isset($r['lang'])) $r['lang'] = '';
+	
+	if (!$r['titre']) {
+		$r['titre'] = $r['surnom'];
+	}
+	
+	if (!isset($r['lang'])) {
+		$r['lang'] = '';
+	}
+	
 	return $r;
 }
 
@@ -609,23 +695,33 @@ define('_RACCOURCI_MODELE_DEBUT', '@^' . _RACCOURCI_MODELE .'@isS');
 // http://doc.spip.org/@traiter_modeles
 function traiter_modeles($texte, $doublons=false, $echap='', $connect='', $liens = null, $env = array()) {
 	// preserver la compatibilite : true = recherche des documents
-	if ($doublons===true)
+	if ($doublons === true) {
 		$doublons = array('documents'=>array('doc','emb','img'));
+	}
+	
 	// detecter les modeles (rapide)
-	if (strpos($texte,"<")!==false AND
-	  preg_match_all('/<[a-z_-]{3,}\s*[0-9|]+/iS', $texte, $matches, PREG_SET_ORDER)) {
+	if (
+		strpos($texte,"<")!==false
+		and preg_match_all('/<[a-z_-]{3,}\s*[0-9|]+/iS', $texte, $matches, PREG_SET_ORDER)
+	) {
 		include_spip('public/assembler');
+		
+		// Recuperer l'appel complet (y compris un eventuel lien)
 		foreach ($matches as $match) {
-			// Recuperer l'appel complet (y compris un eventuel lien)
-
-			$a = strpos($texte,$match[0]);
-			preg_match(_RACCOURCI_MODELE_DEBUT,
-			substr($texte, $a), $regs);
-			while(count($regs) < 6) $regs[] = ""; // s'assurer qu'il y a toujours un 5e arg, eventuellement vide
+			$a = strpos($texte, $match[0]);
+			preg_match(_RACCOURCI_MODELE_DEBUT, substr($texte, $a), $regs);
+			
+			// s'assurer qu'il y a toujours un 5e arg, eventuellement vide
+			while (count($regs) < 6) {
+				$regs[] = "";
+			}
+			
 			list(,$mod, $type, $id, $params, $fin) = $regs;
-			if ($fin AND
-			preg_match('/<a\s[^<>]*>\s*$/i',
-					substr($texte, 0, $a), $r)) {
+			
+			if (
+				$fin
+				and preg_match('/<a\s[^<>]*>\s*$/i', substr($texte, 0, $a), $r)
+			) {
 				$lien = array(
 					'href' => extraire_attribut($r[0],'href'),
 					'class' => extraire_attribut($r[0],'class'),
@@ -641,29 +737,38 @@ function traiter_modeles($texte, $doublons=false, $echap='', $connect='', $liens
 
 			// calculer le modele
 			# hack indexation
-			if ($doublons)
+			if ($doublons) {
 				$texte .= preg_replace(',[|][^|=]*,s',' ',$params);
+			}
 			# version normale
 			else {
 				// si un tableau de liens a ete passe, reinjecter le contenu d'origine
 				// dans les parametres, plutot que les liens echappes
-				if (!is_null($liens))
+				if (!is_null($liens)) {
 					$params = str_replace($liens[0], $liens[1], $params);
-			  $modele = inclure_modele($type, $id, $params, $lien, $connect, $env);
+				}
+				
+				$modele = inclure_modele($type, $id, $params, $lien, $connect, $env);
+				
 				// en cas d'echec,
 				// si l'objet demande a une url,
 				// creer un petit encadre vers elle
 				if ($modele === false) {
 					$modele = substr($texte,$a,$cherche);
-					if (!is_null($liens))
+					
+					if (!is_null($liens)) {
 						$modele = str_replace($liens[0], $liens[1], $modele);
+					}
+					
 					$contexte = array_merge($env,array('id'=>$id,'type'=>$type,'modele'=>$modele));
+					
 					if ($lien) {
 						# un eventuel guillemet (") sera reechappe par #ENV
 						$contexte['lien'] = str_replace("&quot;",'"', $lien['href']);
 						$contexte['lien_class'] = $lien['class'];
 						$contexte['lien_mime'] = $lien['mime'];
 					}
+					
 					$modele = recuperer_fond("modeles/dist", $contexte, array(), $connect);
 				}
 				// le remplacer dans le texte
@@ -677,10 +782,12 @@ function traiter_modeles($texte, $doublons=false, $echap='', $connect='', $liens
 			}
 
 			// hack pour tout l'espace prive
-			if (((!_DIR_RESTREINT) OR ($doublons)) AND ($id)){
-				foreach($doublons?$doublons:array('documents'=>array('doc','emb','img')) as $quoi=>$modeles)
-					if (in_array($type,$modeles))
+			if (((!_DIR_RESTREINT) or ($doublons)) and ($id)) {
+				foreach($doublons?$doublons:array('documents'=>array('doc','emb','img')) as $quoi => $modeles) {
+					if (in_array($type, $modeles)) {
 						$GLOBALS["doublons_{$quoi}_inclus"][] = $id;
+					}
+				}
 			}
 		}
 	}
@@ -695,12 +802,17 @@ function traiter_modeles($texte, $doublons=false, $echap='', $connect='', $liens
 define('_RACCOURCI_ANCRE', "/\[#?([^][]*)<-\]/S");
 
 // http://doc.spip.org/@traiter_raccourci_ancre
-function traiter_raccourci_ancre($letexte)
-{
-	if (preg_match_all(_RACCOURCI_ANCRE, $letexte, $m, PREG_SET_ORDER))
-	foreach ($m as $regs)
-		$letexte = str_replace($regs[0],
-		'<a name="'.entites_html($regs[1]).'"></a>', $letexte);
+function traiter_raccourci_ancre($letexte) {
+	if (preg_match_all(_RACCOURCI_ANCRE, $letexte, $m, PREG_SET_ORDER)) {
+		foreach ($m as $regs) {
+			$letexte = str_replace(
+				$regs[0],
+				'<a name="'.entites_html($regs[1]).'"></a>',
+				$letexte
+			);
+		}
+	}
+	
 	return $letexte;
 }
 
@@ -713,56 +825,61 @@ define('_RACCOURCI_GLOSSAIRE', "/\[\?+\s*([^][<>]+)\]/S");
 define('_RACCOURCI_GLOSES', '/^([^|#{]*\w[^|#{]*)([^#]*)(#([^|{}]*))?(.*)$/S');
 
 // http://doc.spip.org/@traiter_raccourci_glossaire
-function traiter_raccourci_glossaire($texte)
-{
-	if (!preg_match_all(_RACCOURCI_GLOSSAIRE,
-	$texte, $matches, PREG_SET_ORDER))
+function traiter_raccourci_glossaire($texte) {
+	if (!preg_match_all(_RACCOURCI_GLOSSAIRE, $texte, $matches, PREG_SET_ORDER)) {
 		return $texte;
+	}
 
 	include_spip('inc/charsets');
 	$lien = charger_fonction('lien', 'inc');
-
-	foreach ($matches as $regs) {
+	
 	// Eviter les cas particulier genre "[?!?]"
 	// et isoler le lexeme a gloser de ses accessoires
 	// (#:url du glossaire, | bulle d'aide, {} hreflang)
 	// Transformation en pseudo-raccourci pour passer dans inc_lien
+	foreach ($matches as $regs) {
 		if (preg_match(_RACCOURCI_GLOSES, $regs[1], $r)) {
 			preg_match('/^(.*?)(\d*)$/', $r[4], $m);
 			$_n = intval($m[2]);
 			$gloss = $m[1] ? ('#' . $m[1]) : '';
 			$t = $r[1] . $r[2] . $r[5];
 			list($t, $bulle, $hlang) = traiter_raccourci_lien_atts($t);
-			if ($bulle===false) $bulle = $m[1];
+			
+			if ($bulle === false) {
+				$bulle = $m[1];
+			}
+			
 			$t = unicode2charset(charset2unicode($t), 'utf-8');
 			$ref = $lien("glose$_n$gloss", $t, 'spip_glossaire', $bulle, $hlang);
 			$texte = str_replace($regs[0], $ref, $texte);
 		}
 	}
+	
 	return $texte;
 }
 
 // http://doc.spip.org/@glossaire_std
-function glossaire_std($terme)
-{
+function glossaire_std($terme) {
 	global $url_glossaire_externe;
 	static $pcre = NULL;
 
 	if ($pcre === NULL) {
-		$pcre = isset($GLOBALS['meta']['pcre_u'])
-		? $GLOBALS['meta']['pcre_u']
-		  : '';
-		if (strpos($url_glossaire_externe, "%s") === false)
+		$pcre = isset($GLOBALS['meta']['pcre_u']) ? $GLOBALS['meta']['pcre_u'] : '';
+		
+		if (strpos($url_glossaire_externe, "%s") === false) {
 			$url_glossaire_externe .= '%s';
+		}
 	}
 
-	$glosateur = str_replace("@lang@",
-				$GLOBALS['spip_lang'],
-				$GLOBALS['url_glossaire_externe']);
+	$glosateur = str_replace(
+		"@lang@",
+		$GLOBALS['spip_lang'],
+		$GLOBALS['url_glossaire_externe']
+	);
 
 	$terme = rawurlencode(preg_replace(',\s+,'.$pcre, '_', $terme));
 
-	return  str_replace("%s", $terme, $glosateur);
+	return str_replace("%s", $terme, $glosateur);
 }
 
 ?>

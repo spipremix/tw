@@ -140,11 +140,20 @@ function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='
 		$rel = " rel='$rel'";
 	}
 
+	$lang_objet_prev = '';
+	if ($hlang AND $hlang!==$GLOBALS['spip_lang']){
+		$lang_objet_prev = isset($GLOBALS['lang_objet'])?$GLOBALS['lang_objet']:null;
+		$GLOBALS['lang_objet'] = $hlang;
+	}
+
 	// si pas de modele dans le texte du lien, on peut juste passer typo sur le texte, c'est plus rapide
 	// les rares cas de lien qui encapsule un modele passe en dessous, c'est plus lent
 	if (traiter_modeles($texte, false, '', $connect, null, $env) == $texte) {
 		$texte = typo($texte, true, $connect, $env);
 		$lien = "<a href=\"".str_replace('"', '&quot;', $lien)."\"$class$lang$title$rel".(isset($mime)?$mime:'').">$texte</a>";
+		if ($lang_objet_prev!==''){
+			if ($lang_objet_prev) $GLOBALS['lang_objet'] = $lang_objet_prev; else unset($GLOBALS['lang_objet']);
+		}
 		return $lien;
 	}
 	
@@ -161,6 +170,9 @@ function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='
 
 	// dans ce cas, echapons le resultat du modele pour que propre etc ne viennent pas pouicher le html
 	$res = echappe_html("<html>$res</html>");
+	if ($lang_objet_prev!==''){
+		if ($lang_objet_prev) $GLOBALS['lang_objet'] = $lang_objet_prev; else unset($GLOBALS['lang_objet']);
+	}
 	return $res;
 }
 

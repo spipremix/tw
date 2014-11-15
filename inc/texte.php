@@ -340,6 +340,7 @@ function traiter_tableau($bloc) {
 		// - <caption> et summary dans la premiere ligne :
 		//   || caption | summary || (|summary est optionnel)
 			if (preg_match(',^\|\|([^|]*)(\|(.*))?$,sS', rtrim($ligne,'|'), $cap)) {
+				$cap = array_pad($cap, 4, null);
 				$l = 0;
 				if ($caption = trim($cap[1]))
 					$debut_table .= "<caption>".$caption."</caption>\n";

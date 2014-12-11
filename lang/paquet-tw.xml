@@ -34,6 +34,9 @@
 	<langue code="pt" url="http://trad.spip.net/tradlang_module/paquet-tw?lang_cible=pt" total="2" traduits="2" relire="0" modifs="0" nouveaux="0" pourcent="100.00">
 		<traducteur nom="Cláudia Anjos Lopes" lien="http://trad.spip.net/auteur/claudia_a_lopes" />
 	</langue>
+	<langue code="pt_br" url="http://trad.spip.net/tradlang_module/paquet-tw?lang_cible=pt_br" total="2" traduits="2" relire="0" modifs="0" nouveaux="0" pourcent="100.00">
+		<traducteur nom="Ricardo Porto" lien="http://trad.spip.net/auteur/ricardo-porto" />
+	</langue>
 	<langue code="ru" url="http://trad.spip.net/tradlang_module/paquet-tw?lang_cible=ru" total="2" traduits="2" relire="0" modifs="0" nouveaux="0" pourcent="100.00">
 		<traducteur nom="nazar" lien="http://trad.spip.net/auteur/nazar" />
 	</langue>

@@ -717,7 +717,8 @@ function traiter_modeles($texte, $doublons=false, $echap='', $connect='', $liens
 		and preg_match_all('/<[a-z_-]{3,}\s*[0-9|]+/iS', $texte, $matches, PREG_SET_ORDER)
 	) {
 		include_spip('public/assembler');
-		
+		$wrap_embed_html = charger_fonction("wrap_embed_html","inc",true);
+
 		// Recuperer l'appel complet (y compris un eventuel lien)
 		foreach ($matches as $match) {
 			$a = strpos($texte, $match[0]);
@@ -786,6 +787,9 @@ function traiter_modeles($texte, $doublons=false, $echap='', $connect='', $liens
 				// le remplacer dans le texte
 				if ($modele !== false) {
 					$modele = protege_js_modeles($modele);
+					if ($wrap_embed_html){
+						$modele = $wrap_embed_html($mod,$modele);
+					}
 					$rempl = code_echappement($modele, $echap);
 					$texte = substr($texte, 0, $a)
 						. $rempl

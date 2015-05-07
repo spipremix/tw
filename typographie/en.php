@@ -22,7 +22,8 @@ function typographie_en($t) {
 		"&nbsp;" => '~',
 		"'" => '&#8217;'
 		);
-		switch ($GLOBALS['meta']['charset']) {
+		$charset = isset($GLOBALS['meta']['charset']) ? $GLOBALS['meta']['charset'] : '';
+		switch ($charset) {
 			case 'utf-8':
 				$trans["\xc2\xa0"] = '~';
 				break;

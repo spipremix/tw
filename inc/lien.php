@@ -607,7 +607,7 @@ function traiter_lien_implicite($ref, $texte='', $pour='url', $connect='') {
 	if (
 		$type == 'document'
 		and $mime = sql_getfetsel('mime_type', 'spip_types_documents',
-			"extension IN (SELECT extension FROM spip_documents where id_document =".intval($id).")",
+			"extension IN (".sql_get_select("extension","spip_documents","id_document=".sql_quote($id)).")",
 			'','','','',$connect)
 	) {
 		$r['mime'] = $mime;

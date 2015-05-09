@@ -94,7 +94,7 @@ function tw_liste_item($t,$quoi='item'){
 				$ajout = $t[1];	// puce normale ou <hr>
 			}
 
-			if (trim($t[3]) === '') {
+			if (!isset($t[3]) or (trim($t[3]) === '')) {
 				// Permet de gerer la previsualisation grand ecran en temps reel en affichant correctement la derniere puce n'ayant pas encore de texte
 				$t[3] = '&nbsp;';
 			}

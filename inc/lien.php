@@ -331,6 +331,8 @@ function nettoyer_raccourcis_typo($texte, $connect='') {
 			list ($titre,,)= traiter_raccourci_lien_atts($reg[1]);
 			if (!$titre) {
 				$match = typer_raccourci($reg[count($reg)-1]);
+				if (!isset($match[0]))
+					$match[0] = '';
 				@list($type,,$id,,,,) = $match;
 				
 				if ($type) {

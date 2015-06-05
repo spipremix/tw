@@ -656,32 +656,42 @@ function typer_raccourci ($lien) {
 	return $match;
 }
 
-// Retourne le champ textuel associe a une cle primaire, et sa langue
+/**
+ * Retourne le titre et la langue d'un objet éditorial
+ *
+ * @param int $id Identifiant de l'objet
+ * @param string $type Type d'objet
+ * @param string|null $connect Connecteur SQL utilisé
+ * @return array {
+ *     @var string $titre Titre si présent, sinon ''
+ *     @var string $lang Langue si présente, sinon ''
+ * }
+**/
 function traiter_raccourci_titre($id, $type, $connect=NULL) {
 	$trouver_table = charger_fonction('trouver_table', 'base');
 	$desc = $trouver_table(table_objet($type));
-	
+
 	if (!($desc AND $s = $desc['titre'])) {
 		return array();
 	}
-	
+
 	$_id = $desc['key']['PRIMARY KEY'];
 	$r = sql_fetsel($s, $desc['table'], "$_id=$id", '','','','',$connect);
-	
+
 	if (!$r) {
 		return array();
 	}
-	
+
 	$r['titre'] = supprimer_numero($r['titre']);
-	
-	if (!$r['titre']) {
+
+	if (!$r['titre'] and !empty($r['surnom'])) {
 		$r['titre'] = $r['surnom'];
 	}
-	
+
 	if (!isset($r['lang'])) {
 		$r['lang'] = '';
 	}
-	
+
 	return $r;
 }
 
@@ -900,4 +910,3 @@ function glossaire_std($terme) {
 	return str_replace("%s", $terme, $glosateur);
 }
 
-?>

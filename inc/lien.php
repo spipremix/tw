@@ -750,7 +750,9 @@ function traiter_modeles($texte, $doublons=false, $echap='', $connect='', $liens
 				$lien = array(
 					'href' => extraire_attribut($r[0],'href'),
 					'class' => extraire_attribut($r[0],'class'),
-					'mime' => extraire_attribut($r[0],'type')
+					'mime' => extraire_attribut($r[0],'type'),
+					'title' => extraire_attribut($r[0],'title'),
+					'hreflang' => extraire_attribut($r[0],'hreflang')
 				);
 				$n = strlen($r[0]);
 				$a -= $n;
@@ -792,6 +794,8 @@ function traiter_modeles($texte, $doublons=false, $echap='', $connect='', $liens
 						$contexte['lien'] = str_replace("&quot;",'"', $lien['href']);
 						$contexte['lien_class'] = $lien['class'];
 						$contexte['lien_mime'] = $lien['mime'];
+						$contexte['lien_title'] = $lien['title'];
+						$contexte['lien_hreflang'] = $lien['hreflang'];
 					}
 					
 					$modele = recuperer_fond("modeles/dist", $contexte, array(), $connect);

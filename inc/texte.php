@@ -695,6 +695,8 @@ function propre($t, $connect=null, $env=array()) {
 	$t = traiter_raccourcis($t, (isset($env['wysiwyg']) AND $env['wysiwyg'])?true:false);
 	$t = echappe_retour_modeles($t, $interdire_script);
 
+	$t = pipeline('post_echappe_html_propre', $t);
+
 	return $t;
 }
 ?>

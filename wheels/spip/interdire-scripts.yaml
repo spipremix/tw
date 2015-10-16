@@ -19,10 +19,19 @@ securite-script-php:
   replace: "&lt;$1"
 
 securite-js:
-  if_str: "<script"
   type: all
-  replace: "echappe_js"
-  is_callback: Y
+  is_wheel: y
+  replace:
+    securite-echappe-script:
+      if_str: "<script"
+      type: all
+      replace: "echappe_js"
+      is_callback: Y
+    securite-echappe-iframe:
+      if_str: "<iframe"
+      type: all
+      replace: "echappe_js"
+      is_callback: Y
 
 securite-base:
   if_str: "<base"

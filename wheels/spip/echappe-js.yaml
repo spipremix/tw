@@ -18,3 +18,21 @@
     -
       type: all
       replace: "<code class=\"echappe-js\">$0</code>"
+
+-
+  if_str: "<iframe"
+  match: "{<iframe.*?($|</iframe.)}isS"
+  is_wheel: y
+  replace:
+    -
+      type: all
+      replace: htmlspecialchars
+      is_callback: Y
+    -
+      type: all
+      replace: nl2br
+      is_callback: Y
+    -
+      type: all
+      replace: "<code class=\"echappe-js\">$0</code>"
+

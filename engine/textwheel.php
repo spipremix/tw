@@ -167,7 +167,7 @@ class TextWheel {
 		if (isset($rule->if_str)) {
 			if (strtolower($rule->if_str) !== strtoupper($rule->if_str)) {
 				$rule->if_stri = $rule->if_str;
-				unset($rule->if_str);
+				$rule->if_str = null;
 			}
 		}
 

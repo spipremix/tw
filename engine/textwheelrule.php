@@ -73,7 +73,7 @@ class TextWheelRule {
 	 * @param <type> $args
 	 * @return <type>
 	 */
-	public function TextWheelRule($args) {
+	public function __construct($args) {
 		if (!is_array($args))
 			return;
 		foreach($args as $k=>$v)

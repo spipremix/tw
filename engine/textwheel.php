@@ -32,7 +32,7 @@ class TextWheel {
 	 * Constructor
 	 * @param TextWheelRuleSet $ruleset
 	 */
-	public function TextWheel($ruleset = null) {
+	public function __construct($ruleset = null) {
 		$this->setRuleSet($ruleset);
 	}
 

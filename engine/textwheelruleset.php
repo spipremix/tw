@@ -100,7 +100,7 @@ class TextWheelRuleSet extends TextWheelDataSet {
 	 * @param array|string $ruleset
 	 * @param string $filepath
 	 */
-	public function TextWheelRuleSet($ruleset = array(), $filepath='') {
+	public function __construct($ruleset = array(), $filepath='') {
 		if ($ruleset)
 			$this->addRules($ruleset, $filepath);
 	}

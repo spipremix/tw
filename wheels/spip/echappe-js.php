@@ -18,12 +18,12 @@ function echappe_anti_xss($match){
 
 	// on echappe les urls data: javascript: et tout ce qui ressemble
 	if (strpos($texte,":")!==false
-	  AND (strpos($texte,"://")==false OR strpos(str_replace("://","",$texte),":")!==false)
-	  ){
+		AND preg_match(",(data|script)\s*:,iS",$texte)){
 		$texte = nl2br(htmlspecialchars($texte));
 	}
 	// on echappe si on a possiblement un attribut onxxx et que ca passe pas dans safehtml
-	elseif(stripos($texte,"on")!==false){
+	elseif(stripos($texte,"on")!==false
+	  AND preg_match(",\bon\w+\s*=,i",$texte)){
 		if (!isset($safehtml))
 			$safehtml = charger_fonction('safehtml', 'inc', true);
 		if (!$safehtml OR strlen($safehtml($texte))!==strlen($texte)){

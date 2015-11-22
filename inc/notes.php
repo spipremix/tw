@@ -54,7 +54,7 @@ if (!defined('_NOTES_RACCOURCI')) define('_NOTES_RACCOURCI', ',\[\[(\s*(<([^>\'"
  *     des tags br (mais 2 à la suite font un paragraphe tout de même).
  * @return string|array
 **/
-function inc_notes_dist($arg,$operation='traiter', $ignorer_autobr=false)
+function inc_notes_dist($arg, $operation = 'traiter', $ignorer_autobr = false)
 {
 	static $pile = array();
 	static $next_marqueur = 1;
@@ -183,7 +183,7 @@ function traiter_raccourci_notes($letexte, $marqueur_notes)
 
 
 // http://code.spip.net/@traiter_les_notes
-function traiter_les_notes($notes,$ignorer_autobr) {
+function traiter_les_notes($notes, $ignorer_autobr) {
 	$mes_notes = '';
 	if ($notes) {
 		$title =  _T('info_notes');

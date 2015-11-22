@@ -34,7 +34,7 @@ abstract class TextWheelDataSet {
 	 * @param string $path
 	 * @return string
 	 */
-	protected function findFile(&$file, $path=''){
+	protected function findFile(&$file, $path = ''){
 		static $default_path;
 
 		// absolute file path ?
@@ -60,7 +60,7 @@ abstract class TextWheelDataSet {
 	 * @param string $default_path
 	 * @return array
 	 */
-	protected function loadFile(&$file, $default_path='') {
+	protected function loadFile(&$file, $default_path = '') {
 		if (!preg_match(',[.]yaml$,i',$file)
 		  // external rules
 		  OR !$file = $this->findFile($file,$default_path))
@@ -100,7 +100,7 @@ class TextWheelRuleSet extends TextWheelDataSet {
 	 * @param array|string $ruleset
 	 * @param string $filepath
 	 */
-	public function __construct($ruleset = array(), $filepath='') {
+	public function __construct($ruleset = array(), $filepath = '') {
 		if ($ruleset)
 			$this->addRules($ruleset, $filepath);
 	}
@@ -114,7 +114,7 @@ class TextWheelRuleSet extends TextWheelDataSet {
 	 * @param string $class
 	 * @return class
 	 */
-	public static function &loader($ruleset, $callback='', $class='TextWheelRuleSet'){
+	public static function &loader($ruleset, $callback = '', $class = 'TextWheelRuleSet'){
 
 		$ruleset = new $class($ruleset);
 		if ($callback)
@@ -167,7 +167,7 @@ class TextWheelRuleSet extends TextWheelDataSet {
 	 * @param array|string $rules
 	 * @param string $filepath
 	 */
-	public function addRules($rules, $filepath='') {
+	public function addRules($rules, $filepath = '') {
 		// rules can be an array of filename
 		if (is_array($rules) AND is_string(reset($rules))) {
 			foreach($rules as $i=>$filename)

@@ -64,7 +64,7 @@ $GLOBALS['spip_wheels']['listes'] = array(
 //
 
 class SPIPTextWheelRuleset extends TextWheelRuleSet {
-	protected function findFile(&$file, $path=''){
+	protected function findFile(&$file, $path = ''){
 		static $default_path;
 
 		// absolute file path?

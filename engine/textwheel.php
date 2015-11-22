@@ -83,7 +83,7 @@ class TextWheel {
 			AND isset($this->compiled[$rule->replace])
 			AND $fun = $this->compiled[$rule->replace]) {
 				$pre[] = "\n###\n## $name\n###\n" . $fun;
-				preg_match(',function (\w+),', $fun, $r);
+				preg_match(',function (\w+), ', $fun, $r);
 				$rule->compilereplace = $r[1]; # ne pas modifier ->replace sinon on casse l'execution...
 			}
 
@@ -245,7 +245,7 @@ class TextWheel {
 	 * @param string $t
 	 * @param int $count
 	 */
-	protected function apply(&$rule, &$t, &$count=null) {
+	protected function apply(&$rule, &$t, &$count = null) {
 
 		if ($rule->disabled)
 			return;
@@ -280,7 +280,7 @@ class TextWheel {
 	 * @param string $t
 	 * @param int $count
 	 */
-	protected static function replace_identity(&$match,&$replace,&$t,&$count){
+	protected static function replace_identity(&$match, &$replace, &$t, &$count){
 	}
 
 	/**
@@ -290,7 +290,7 @@ class TextWheel {
 	 * @param string $t
 	 * @param int $count
 	 */
-	protected static function replace_all(&$match,&$replace,&$t,&$count){
+	protected static function replace_all(&$match, &$replace, &$t, &$count){
 		# special case: replace $0 with $t
 		#   replace: "A$0B" will surround the string with A..B
 		#   replace: "$0$0" will repeat the string
@@ -307,7 +307,7 @@ class TextWheel {
 	 * @param string $t
 	 * @param int $count
 	 */
-	protected static function replace_all_cb(&$match,&$replace,&$t,&$count){
+	protected static function replace_all_cb(&$match, &$replace, &$t, &$count){
 		$t = $replace($t);
 	}
 
@@ -319,7 +319,7 @@ class TextWheel {
 	 * @param string $t
 	 * @param int $count
 	 */
-	protected static function replace_str(&$match,&$replace,&$t,&$count){
+	protected static function replace_str(&$match, &$replace, &$t, &$count){
 		if (!is_string($match) OR strpos($t,$match)!==FALSE)
 			$t = str_replace($match, $replace, $t, $count);
 	}
@@ -332,7 +332,7 @@ class TextWheel {
 	 * @param string $t
 	 * @param int $count
 	 */
-	protected static function replace_strtr(&$match,&$replace,&$t,&$count){
+	protected static function replace_strtr(&$match, &$replace, &$t, &$count){
 		$t = strtr( $t, $match, $replace);
 	}
 
@@ -344,7 +344,7 @@ class TextWheel {
 	 * @param string $t
 	 * @param int $count
 	 */
-	protected static function replace_str_cb(&$match,&$replace,&$t,&$count){
+	protected static function replace_str_cb(&$match, &$replace, &$t, &$count){
 		if (strpos($t,$match)!==FALSE)
 			if (count($b = explode($match, $t)) > 1)
 				$t = join($replace($match), $b);
@@ -359,7 +359,7 @@ class TextWheel {
 	 * @param int $count
 	 * @throws Exception
 	 */
-	protected static function replace_preg(&$match,&$replace,&$t,&$count){
+	protected static function replace_preg(&$match, &$replace, &$t, &$count){
 		$t = preg_replace($match, $replace, $t, -1, $count);
 		if (is_null($t)){
 			throw new Exception('Memory error, increase pcre.backtrack_limit in php.ini');
@@ -374,7 +374,7 @@ class TextWheel {
 	 * @param int $count
 	 * @throws Exception
 	 */
-	protected static function replace_preg_cb(&$match,&$replace,&$t,&$count){
+	protected static function replace_preg_cb(&$match, &$replace, &$t, &$count){
 		$t = preg_replace_callback($match, $replace, $t, -1, $count);
 		if (is_null($t)){
 			throw new Exception('Memory error, increase pcre.backtrack_limit in php.ini');
@@ -389,7 +389,7 @@ class TextWheel {
 	 * @param string $t
 	 * @param int $count
 	 */
-	protected static function replace_split(&$match,&$replace,&$t,&$count){
+	protected static function replace_split(&$match, &$replace, &$t, &$count){
 		throw new InvalidArgumentException('split rule always needs a callback function as replace');
 	}
 
@@ -400,7 +400,7 @@ class TextWheel {
 	 * @param string $t
 	 * @param int $count
 	 */
-	protected static function replace_split_cb(&$match,&$replace,&$t,&$count){
+	protected static function replace_split_cb(&$match, &$replace, &$t, &$count){
 		$a = explode($match[0], $t);
 		$t = join($match[1], array_map($replace,$a));
 	}
@@ -422,7 +422,7 @@ class TextWheelDebug extends TextWheel {
 	 * @param bool $raw
 	 * @return int/strinf
 	 */
-	protected function timer($t='rien', $raw = false) {
+	protected function timer($t = 'rien', $raw = false) {
 		static $time;
 		$a=time(); $b=microtime();
 		// microtime peut contenir les microsecondes et le temps
@@ -529,7 +529,7 @@ class TextWheelDebug extends TextWheel {
 		}
 	}
 
-	public static function outputTotal($liste, $profondeur=0) {
+	public static function outputTotal($liste, $profondeur = 0) {
 		ksort($liste);
 		foreach ($liste as $cause => $duree) {
 			if (is_array($duree)) {

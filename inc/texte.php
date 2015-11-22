@@ -192,7 +192,7 @@ function interdire_scripts($arg) {
  * @return string $t
  *     Texte transformé
 **/
-function typo($letexte, $echapper=true, $connect=null, $env=array()) {
+function typo($letexte, $echapper = true, $connect = null, $env = array()) {
 	// Plus vite !
 	if (!$letexte) return $letexte;
 
@@ -265,7 +265,7 @@ define('_TYPO_BALISE', ",</?[a-z!][^<>]*[".preg_quote(_TYPO_PROTEGER)."][^<>]*>,
  * @param string $lang Langue
  * @return string Texte
  */
-function corriger_typo($t, $lang='') {
+function corriger_typo($t, $lang = '') {
 	static $typographie = array();
 	// Plus vite !
 	if (!$t) return $t;
@@ -679,7 +679,7 @@ function traiter_raccourcis($t, $show_autobr = false) {
  * @return string $t
  *     Texte transformé
 **/
-function propre($t, $connect=null, $env=array()) {
+function propre($t, $connect = null, $env = array()) {
 	// les appels directs a cette fonction depuis le php de l'espace
 	// prive etant historiquement ecrits sans argment $connect
 	// on utilise la presence de celui-ci pour distinguer les cas

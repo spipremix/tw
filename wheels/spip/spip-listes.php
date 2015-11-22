@@ -13,7 +13,7 @@ function tw_liste_close($t){
 	return tw_liste_item($t,'close');
 }
 
-function tw_liste_item($t,$quoi='item'){
+function tw_liste_item($t, $quoi = 'item'){
 	global $class_spip, $class_spip_plus;
 	static $niveau;
 	static $pile_li;

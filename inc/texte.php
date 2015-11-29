@@ -415,19 +415,25 @@ function traiter_tableau($bloc) {
 	$k = count($lignes);
 	// distinguer les colonnes numeriques a point ou a virgule,
 	// pour les alignements eventuels sur "," ou "."
-	$numeric_class = array('.'=>'point',','=>'virgule');
+	$numeric_class = array(
+		'.' => 'point',
+		',' => 'virgule',
+		true => ''
+	);
 	for($i=0;$i<$n;$i++) {
-	  $align = true;
-	  for ($j=0;$j<$k;$j++) {
-		  $rowspans[$j][$i] = 1;
-			if ($align AND preg_match('/^[{+-]*(?:\s|\d)*([.,]?)\d*[}]*$/', trim($lignes[$j][$i]), $r)){
-				if ($r[1])
+		$align = true;
+		for ($j=0;$j<$k;$j++) {
+			$rowspans[$j][$i] = 1;
+			if ($align AND preg_match('/^[{+-]*(?:\s|\d)*([.,]?)\d*[}]*$/', trim($lignes[$j][$i]), $r)) {
+				if ($r[1]) {
 					$align = $r[1];
+				}
 			}
-			else
+			else {
 				$align = '';
-	  }
-	  $numeric[$i] = $align ? (" class='numeric ".$numeric_class[$align]."'") : '';
+			}
+		}
+		$numeric[$i] = $align ? (" class='numeric ". $numeric_class[$align] . "'") : '';
 	}
 	for ($j=0;$j<$k;$j++) {
 		if (preg_match($reg_line_all, $lignes[$j][0])) {

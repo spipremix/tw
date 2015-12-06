@@ -89,17 +89,15 @@ class SPIPTextWheelRuleset extends TextWheelRuleSet {
 		$key = 'tw-'.md5(_WHEELS_VERSION."-".serialize($ruleset).$key.$class._DIR_RACINE);
 
 		# lecture du cache
-		include_spip('memoization_options');
-		if (!function_exists('cache_get')) include_spip('inc/memoization-mini');
 		if ((!defined('_VAR_MODE') OR _VAR_MODE!='recalcul')
-		  AND $cacheruleset = cache_get($key))
+		  AND $cacheruleset = tw_cache_get($key))
 			return $cacheruleset;
 
 		# calcul de la wheel
 		$ruleset = parent::loader($ruleset, $callback, $class);
 
 		# ecriture du cache
-		cache_set($key, $ruleset);
+		tw_cache_set($key, $ruleset);
 
 		return $ruleset;
 	}
@@ -112,4 +110,36 @@ function tw_trig_purger($quoi){
 	return $quoi;
 }
 
-?>
+
+/**
+ * Lire une valeur en cache
+ * memoization minimale
+ * (utilise le plugin memoization si disponible)
+ *
+ * @param string $key
+ * @return mixed
+ */
+function tw_cache_get($key) {
+	if (function_exists('cache_get')){
+		return cache_get($key);
+	}
+	return @unserialize(file_get_contents(_DIR_CACHE."wheels/".$key.".txt"));
+}
+
+/**
+ * Ecrire une valeur en cache
+ * memoization minimale
+ * (utilise le plugin memoization si disponible)
+ *
+ * @param string $key
+ * @param mixed $value
+ * @param int|null $ttl
+ * @return bool
+ */
+function tw_cache_set($key, $value, $ttl=null) {
+	if (function_exists('cache_set')){
+		return cache_set($key, $value, $ttl);
+	}
+	$dir = sous_repertoire(_DIR_CACHE,"wheels/");
+	return ecrire_fichier($dir.$key.".txt", serialize($value));
+}

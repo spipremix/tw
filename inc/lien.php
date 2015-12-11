@@ -839,7 +839,7 @@ function traiter_raccourci_ancre($letexte) {
 		foreach ($m as $regs) {
 			$letexte = str_replace(
 				$regs[0],
-				'<a name="'.entites_html($regs[1]).'"></a>',
+				'<a '.(html5_permis() ? 'id' : 'name').'="'.entites_html($regs[1]).'"></a>',
 				$letexte
 			);
 		}

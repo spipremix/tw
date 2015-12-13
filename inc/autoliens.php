@@ -54,6 +54,3 @@ function tw_traiter_autoliens($r) {
 	// si l'original ne contenait pas le 'http:' on le supprime du clic
 	return ($m ? $r : str_replace('>http://', '>', $r));
 }
-
-
-?>

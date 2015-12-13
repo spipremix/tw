@@ -46,7 +46,7 @@ class TextWheel {
 	 */
 	public function setRuleSet($ruleset) {
 		if (!is_object($ruleset)) {
-			$ruleset = new TextWheelRuleSet ($ruleset);
+			$ruleset = new TextWheelRuleSet($ruleset);
 		}
 		$this->ruleset = $ruleset;
 	}
@@ -84,8 +84,8 @@ class TextWheel {
 			$rule->name = $name;
 			$this->initRule($rule);
 			if (is_string($rule->replace)
-				AND isset($this->compiled[$rule->replace])
-				AND $fun = $this->compiled[$rule->replace]
+				and isset($this->compiled[$rule->replace])
+				and $fun = $this->compiled[$rule->replace]
 			) {
 				$pre[] = "\n###\n## $name\n###\n" . $fun;
 				preg_match(',function (\w+), ', $fun, $r);
@@ -192,7 +192,7 @@ class TextWheel {
 			$n = count(TextWheel::$subwheel);
 			TextWheel::$subwheel[] = $this->createSubWheel($rule->replace);
 			$var = '$m[' . intval($rule->pick_match) . ']';
-			if ($rule->type == 'all' OR $rule->type == 'str' OR $rule->type == 'split' OR !isset($rule->match)) {
+			if ($rule->type == 'all' or $rule->type == 'str' or $rule->type == 'split' or !isset($rule->match)) {
 				$var = '$m';
 			}
 			$code = 'return TextWheel::getSubWheel(' . $n . ')->text(' . $var . ');';
@@ -215,15 +215,15 @@ class TextWheel {
 					$rule->func_replace = 'replace_str';
 					// test if quicker strtr usable
 					if (!$rule->is_callback
-						AND is_array($rule->match) AND is_array($rule->replace)
-						AND $c = array_map('strlen', $rule->match)
-						AND $c = array_unique($c)
-						AND count($c) == 1
-						AND reset($c) == 1
-						AND $c = array_map('strlen', $rule->replace)
-						AND $c = array_unique($c)
-						AND count($c) == 1
-						AND reset($c) == 1
+						and is_array($rule->match) and is_array($rule->replace)
+						and $c = array_map('strlen', $rule->match)
+						and $c = array_unique($c)
+						and count($c) == 1
+						and reset($c) == 1
+						and $c = array_map('strlen', $rule->replace)
+						and $c = array_unique($c)
+						and count($c) == 1
+						and reset($c) == 1
 					) {
 						$rule->match = implode('', $rule->match);
 						$rule->replace = implode('', $rule->replace);
@@ -263,11 +263,11 @@ class TextWheel {
 			return;
 		}
 
-		if (isset($rule->if_chars) AND (strpbrk($t, $rule->if_chars) === false)) {
+		if (isset($rule->if_chars) and (strpbrk($t, $rule->if_chars) === false)) {
 			return;
 		}
 
-		if (isset($rule->if_match) AND !preg_match($rule->if_match, $t)) {
+		if (isset($rule->if_match) and !preg_match($rule->if_match, $t)) {
 			return;
 		}
 
@@ -276,11 +276,11 @@ class TextWheel {
 			$this->initRule($rule);
 		}
 
-		if (isset($rule->if_str) AND strpos($t, $rule->if_str) === false) {
+		if (isset($rule->if_str) and strpos($t, $rule->if_str) === false) {
 			return;
 		}
 
-		if (isset($rule->if_stri) AND stripos($t, $rule->if_stri) === false) {
+		if (isset($rule->if_stri) and stripos($t, $rule->if_stri) === false) {
 			return;
 		}
 
@@ -341,7 +341,7 @@ class TextWheel {
 	 * @param int $count
 	 */
 	protected static function replace_str(&$match, &$replace, &$t, &$count) {
-		if (!is_string($match) OR strpos($t, $match) !== false) {
+		if (!is_string($match) or strpos($t, $match) !== false) {
 			$t = str_replace($match, $replace, $t, $count);
 		}
 	}
@@ -434,12 +434,12 @@ class TextWheel {
 }
 
 class TextWheelDebug extends TextWheel {
-	static protected $t; #tableaux des temps
-	static protected $tu; #tableaux des temps (rules utilises)
-	static protected $tnu; #tableaux des temps (rules non utilises)
-	static protected $u; #compteur des rules utiles
-	static protected $w; #compteur des rules appliques
-	static $total;
+	protected static $t; #tableaux des temps
+	protected static $tu; #tableaux des temps (rules utilises)
+	protected static $tnu; #tableaux des temps (rules non utilises)
+	protected static $u; #compteur des rules utiles
+	protected static $w; #compteur des rules appliques
+	public static $total;
 
 	/**
 	 * Timer for profiling
@@ -460,9 +460,9 @@ class TextWheelDebug extends TextWheel {
 		} // plus precis !
 		$b = reset($b);
 		if (!isset($time[$t])) {
-			$time[$t] = $a+$b;
+			$time[$t] = $a + $b;
 		} else {
-			$p = ($a+$b-$time[$t])*1000;
+			$p = ($a + $b - $time[$t]) * 1000;
 			unset($time[$t]);
 			if ($raw) {
 				return $p;
@@ -470,8 +470,8 @@ class TextWheelDebug extends TextWheel {
 			if ($p < 1000) {
 				$s = '';
 			} else {
-				$s = sprintf("%d ", $x = floor($p/1000));
-				$p -= ($x*1000);
+				$s = sprintf("%d ", $x = floor($p / 1000));
+				$p -= ($x * 1000);
 			}
 
 			return $s . sprintf("%.3f ms", $p);
@@ -538,15 +538,15 @@ class TextWheelDebug extends TextWheel {
 			foreach ($time as $t => $r) {
 				$applications = intval(TextWheelDebug::$u[$r]);
 				$total += $t;
-				if (intval($t*10)) {
+				if (intval($t * 10)) {
 					echo "<tr>
-					<td class='number strong'>" . number_format(round($t*10)/10, 1) . "</td><td> " . spip_htmlspecialchars($r) . "</td>
+					<td class='number strong'>" . number_format(round($t * 10) / 10, 1) . "</td><td> " . spip_htmlspecialchars($r) . "</td>
 					<td"
 						. (!$applications ? " class='zero'" : "")
 						. ">" . $applications . "/" . intval(TextWheelDebug::$w[$r]) . "</td>
-					<td class='number'>" . ($applications ? number_format(round(TextWheelDebug::$tu[$r]/$applications*100)/100,
+					<td class='number'>" . ($applications ? number_format(round(TextWheelDebug::$tu[$r] / $applications * 100) / 100,
 							2) : "") . "</td>
-					<td class='number'>" . (($nu = intval(TextWheelDebug::$w[$r])-$applications) ? number_format(round(TextWheelDebug::$tnu[$r]/$nu*100)/100,
+					<td class='number'>" . (($nu = intval(TextWheelDebug::$w[$r]) - $applications) ? number_format(round(TextWheelDebug::$tnu[$r] / $nu * 100) / 100,
 							2) : "") . "</td>
 					</tr>";
 				}
@@ -570,7 +570,7 @@ class TextWheelDebug extends TextWheel {
 		ksort($liste);
 		foreach ($liste as $cause => $duree) {
 			if (is_array($duree)) {
-				TextWheelDebug::outputTotal($duree, $profondeur+1);
+				TextWheelDebug::outputTotal($duree, $profondeur + 1);
 			} else {
 				echo "<tr class='prof-$profondeur'>
 					<td class='number'><b>" . intval($duree) . "</b>&nbsp;ms</td>

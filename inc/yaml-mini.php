@@ -18,5 +18,3 @@ function yaml_decode($input) {
 		return null;
 	}
 }
-
-?>

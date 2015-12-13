@@ -58,5 +58,3 @@ function tw_traiter_ressources($r) {
 
 	return '<html>' . $html . '</html>';
 }
-
-?>

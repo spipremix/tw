@@ -13,24 +13,24 @@ if (!defined('_ECRIRE_INC_VERSION')) {
 function echappe_anti_xss($match) {
 	static $safehtml;
 
-	if (!is_array($match) OR !strlen($match[0])) {
+	if (!is_array($match) or !strlen($match[0])) {
 		return "";
 	}
 	$texte = &$match[0];
 
 	// on echappe les urls data: javascript: et tout ce qui ressemble
 	if (strpos($texte, ":") !== false
-		AND preg_match(",(data|script)\s*:,iS", $texte)
+		and preg_match(",(data|script)\s*:,iS", $texte)
 	) {
 		$texte = nl2br(htmlspecialchars($texte));
 	} // on echappe si on a possiblement un attribut onxxx et que ca passe pas dans safehtml
 	elseif (stripos($texte, "on") !== false
-		AND preg_match(",\bon\w+\s*=,i", $texte)
+		and preg_match(",\bon\w+\s*=,i", $texte)
 	) {
 		if (!isset($safehtml)) {
 			$safehtml = charger_fonction('safehtml', 'inc', true);
 		}
-		if (!$safehtml OR strlen($safehtml($texte)) !== strlen($texte)) {
+		if (!$safehtml or strlen($safehtml($texte)) !== strlen($texte)) {
 			$texte = nl2br(htmlspecialchars($texte));
 		}
 	}

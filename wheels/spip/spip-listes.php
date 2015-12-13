@@ -62,15 +62,15 @@ function tw_liste_item($t, $quoi = 'item') {
 				// changement de type de liste au meme niveau : il faut
 				// descendre un niveau plus bas, fermer ce niveau, et
 				// remonter
-				$change_type = ($type AND ($type <> $nouv_type) AND ($profond == $niveau)) ? 1 : 0;
+				$change_type = ($type and ($type <> $nouv_type) and ($profond == $niveau)) ? 1 : 0;
 				$type = $nouv_type;
 
 				// d'abord traiter les descentes
-				while ($niveau > $profond-$change_type) {
+				while ($niveau > $profond - $change_type) {
 					$ajout .= $pile_li[$niveau];
 					$ajout .= $pile_type[$niveau];
 					if (!$change_type) {
-						unset ($pile_li[$niveau]);
+						unset($pile_li[$niveau]);
 					}
 					$niveau--;
 				}

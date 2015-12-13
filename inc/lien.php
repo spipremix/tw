@@ -149,7 +149,7 @@ function inc_lien_dist(
 	}
 
 	$lang_objet_prev = '';
-	if ($hlang AND $hlang !== $GLOBALS['spip_lang']) {
+	if ($hlang and $hlang !== $GLOBALS['spip_lang']) {
 		$lang_objet_prev = isset($GLOBALS['lang_objet']) ? $GLOBALS['lang_objet'] : null;
 		$GLOBALS['lang_objet'] = $hlang;
 	}
@@ -349,13 +349,13 @@ function nettoyer_raccourcis_typo($texte, $connect = '') {
 	if (preg_match_all(_RACCOURCI_LIEN, $texte, $regs, PREG_SET_ORDER)) {
 		include_spip('inc/texte');
 		foreach ($regs as $reg) {
-			list ($titre, ,) = traiter_raccourci_lien_atts($reg[1]);
+			list($titre, , ) = traiter_raccourci_lien_atts($reg[1]);
 			if (!$titre) {
-				$match = typer_raccourci($reg[count($reg)-1]);
+				$match = typer_raccourci($reg[count($reg) - 1]);
 				if (!isset($match[0])) {
 					$match[0] = '';
 				}
-				@list($type, , $id, , , ,) = $match;
+				@list($type, , $id, , , , ) = $match;
 
 				if ($type) {
 					$url = generer_url_entite($id, $type, '', '', true);
@@ -669,7 +669,7 @@ function typer_raccourci($lien) {
 					if ($f == 'aut') {
 						$f = 'auteur';
 					} else {
-						if ($f == 'doc' OR $f == 'im' OR $f == 'img' OR $f == 'image' OR $f == 'emb') {
+						if ($f == 'doc' or $f == 'im' or $f == 'img' or $f == 'image' or $f == 'emb') {
 							$f = 'document';
 						} else {
 							if (preg_match('/^br..?ve$/S', $f)) {
@@ -702,7 +702,7 @@ function traiter_raccourci_titre($id, $type, $connect = null) {
 	$trouver_table = charger_fonction('trouver_table', 'base');
 	$desc = $trouver_table(table_objet($type));
 
-	if (!($desc AND $s = $desc['titre'])) {
+	if (!($desc and $s = $desc['titre'])) {
 		return array();
 	}
 
@@ -787,7 +787,7 @@ function traiter_modeles($texte, $doublons = false, $echap = '', $connect = '', 
 				);
 				$n = strlen($r[0]);
 				$a -= $n;
-				$cherche = $n+strlen($regs[0]);
+				$cherche = $n + strlen($regs[0]);
 			} else {
 				$lien = false;
 				$cherche = strlen($mod);
@@ -839,7 +839,7 @@ function traiter_modeles($texte, $doublons = false, $echap = '', $connect = '', 
 					$rempl = code_echappement($modele, $echap);
 					$texte = substr($texte, 0, $a)
 						. $rempl
-						. substr($texte, $a+$cherche);
+						. substr($texte, $a + $cherche);
 				}
 			}
 
@@ -943,4 +943,3 @@ function glossaire_std($terme) {
 
 	return str_replace("%s", $terme, $glosateur);
 }
-

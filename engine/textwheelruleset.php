@@ -45,7 +45,7 @@ abstract class TextWheelDataSet {
 		}
 
 		// file embed with texwheels, relative to calling ruleset
-		if ($path AND file_exists($f = $path . $file)) {
+		if ($path and file_exists($f = $path . $file)) {
 			return $f;
 		}
 
@@ -70,7 +70,7 @@ abstract class TextWheelDataSet {
 	protected function loadFile(&$file, $default_path = '') {
 		if (!preg_match(',[.]yaml$,i', $file)
 			// external rules
-			OR !$file = $this->findFile($file, $default_path)
+			or !$file = $this->findFile($file, $default_path)
 		) {
 			return array();
 		}
@@ -93,7 +93,7 @@ abstract class TextWheelDataSet {
 		// if a php file with same name exists
 		// include it as it contains callback functions
 		if ($f = preg_replace(',[.]yaml$,i', '.php', $file)
-			AND file_exists($f)
+			and file_exists($f)
 		) {
 			$dataset[] = array('require' => $f, 'priority' => -1000);
 		}
@@ -190,7 +190,7 @@ class TextWheelRuleSet extends TextWheelDataSet {
 	 */
 	public function addRules($rules, $filepath = '') {
 		// rules can be an array of filename
-		if (is_array($rules) AND is_string(reset($rules))) {
+		if (is_array($rules) and is_string(reset($rules))) {
 			foreach ($rules as $i => $filename) {
 				$this->addRules($filename);
 			}
@@ -206,7 +206,7 @@ class TextWheelRuleSet extends TextWheelDataSet {
 		}
 
 		// rules can be an array of rules
-		if (is_array($rules) AND count($rules)) {
+		if (is_array($rules) and count($rules)) {
 			# cast array-rules to objects
 			foreach ($rules as $i => $rule) {
 				if (is_array($rule)) {

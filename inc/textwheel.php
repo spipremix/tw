@@ -30,7 +30,7 @@ if (!isset($GLOBALS['spip_wheels'])) {
 }
 
 // Si le tableau des raccourcis existe déjà
-if (!isset($GLOBALS['spip_wheels']['raccourcis']) OR !is_array($GLOBALS['spip_wheels']['raccourcis'])) {
+if (!isset($GLOBALS['spip_wheels']['raccourcis']) or !is_array($GLOBALS['spip_wheels']['raccourcis'])) {
 	$GLOBALS['spip_wheels']['raccourcis'] = array(
 		'spip/spip.yaml',
 		'spip/spip-paragrapher.yaml'
@@ -79,7 +79,7 @@ class SPIPTextWheelRuleset extends TextWheelRuleSet {
 		}
 
 		// file include with texwheels, relative to calling ruleset
-		if ($path AND file_exists($f = $path . $file)) {
+		if ($path and file_exists($f = $path . $file)) {
 			return $f;
 		}
 
@@ -98,8 +98,8 @@ class SPIPTextWheelRuleset extends TextWheelRuleSet {
 		$key = 'tw-' . md5(_WHEELS_VERSION . "-" . serialize($ruleset) . $key . $class . _DIR_RACINE);
 
 		# lecture du cache
-		if ((!defined('_VAR_MODE') OR _VAR_MODE != 'recalcul')
-			AND $cacheruleset = tw_cache_get($key)
+		if ((!defined('_VAR_MODE') or _VAR_MODE != 'recalcul')
+			and $cacheruleset = tw_cache_get($key)
 		) {
 			return $cacheruleset;
 		}

@@ -98,7 +98,7 @@ function inc_notes_dist($arg, $operation = 'traiter', $ignorer_autobr = false) {
 				spip_log("notes perdues");
 			}
 			// si le marqueur n'a pas servi, le liberer
-			if (!strlen($les_notes) AND $marqueur == $next_marqueur) {
+			if (!strlen($les_notes) and $marqueur == $next_marqueur) {
 				$next_marqueur--;
 			}
 			// on redepile tout suite a une fin d'inclusion ou d'un affichage des notes
@@ -111,20 +111,20 @@ function inc_notes_dist($arg, $operation = 'traiter', $ignorer_autobr = false) {
 			}
 			break;
 		case 'sauver_etat':
-			if ($compt_note OR $marqueur > 1 OR $next_marqueur > 1) {
+			if ($compt_note or $marqueur > 1 or $next_marqueur > 1) {
 				return array($les_notes, $compt_note, $notes_vues, $marqueur, $next_marqueur);
 			} else {
 				return '';
 			} // rien a sauver
 			break;
 		case 'restaurer_etat':
-			if ($arg AND is_array($arg)) // si qqchose a restaurer
+			if ($arg and is_array($arg)) // si qqchose a restaurer
 			{
 				list($les_notes, $compt_note, $notes_vues, $marqueur, $next_marqueur) = $arg;
 			}
 			break;
 		case 'contexter_cache':
-			if ($compt_note OR $marqueur > 1 OR $next_marqueur > 1) {
+			if ($compt_note or $marqueur > 1 or $next_marqueur > 1) {
 				return array("$compt_note:$marqueur:$next_marqueur");
 			} else {
 				return '';
@@ -149,7 +149,7 @@ function traiter_raccourci_notes($letexte, $marqueur_notes) {
 	global $compt_note, $notes_vues;
 
 	if (strpos($letexte, '[[') === false
-		OR !preg_match_all(_NOTES_RACCOURCI, $letexte, $m, PREG_SET_ORDER)
+		or !preg_match_all(_NOTES_RACCOURCI, $letexte, $m, PREG_SET_ORDER)
 	) {
 		return array($letexte, array());
 	}
@@ -165,9 +165,9 @@ function traiter_raccourci_notes($letexte, $marqueur_notes) {
 		// si la balise fermante correspondante existe
 		// Cas pathologique:   [[ <a> <a href="x">x</a>]]
 
-		if (!(isset($nom) AND $ref
-			AND ((strpos($note_texte, '</' . $nom . '>') === false)
-				OR preg_match(",<$nom\W.*</$nom>,", $note_texte)))
+		if (!(isset($nom) and $ref
+			and ((strpos($note_texte, '</' . $nom . '>') === false)
+				or preg_match(",<$nom\W.*</$nom>,", $note_texte)))
 		) {
 			$nom = ++$compt_note;
 			$note_texte = $note_all;
@@ -201,7 +201,7 @@ function traiter_raccourci_notes($letexte, $marqueur_notes) {
 		$pos = strpos($letexte, $note_source);
 		$letexte = rtrim(substr($letexte, 0, $pos), ' ')
 			. code_echappement($nom)
-			. substr($letexte, $pos+strlen($note_source));
+			. substr($letexte, $pos + strlen($note_source));
 
 	}
 
@@ -233,5 +233,3 @@ function traiter_les_notes($notes, $ignorer_autobr) {
 
 	return ($GLOBALS['les_notes'] .= $mes_notes);
 }
-
-?>

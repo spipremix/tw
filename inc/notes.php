@@ -14,25 +14,37 @@
  * Gestion des notes de bas de page
  *
  * @package SPIP\Textwheel\Notes
-**/
+ **/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined("_ECRIRE_INC_VERSION")) {
+	return;
+}
 
 //
 // Notes de bas de page
 //
-if (!defined('_NOTES_OUVRE_REF')) define('_NOTES_OUVRE_REF','<span class="spip_note_ref">&nbsp;[');
-if (!defined('_NOTES_FERME_REF')) define('_NOTES_FERME_REF',']</span>');
-if (!defined('_NOTES_OUVRE_NOTE')) define('_NOTES_OUVRE_NOTE','<span class="spip_note_ref">[');
-if (!defined('_NOTES_FERME_NOTE')) define('_NOTES_FERME_NOTE',']&nbsp;</span>');
-if (!defined('_NOTES_RACCOURCI')) define('_NOTES_RACCOURCI', ',\[\[(\s*(<([^>\'"]*)>)?(.*?))\]\],msS');
+if (!defined('_NOTES_OUVRE_REF')) {
+	define('_NOTES_OUVRE_REF', '<span class="spip_note_ref">&nbsp;[');
+}
+if (!defined('_NOTES_FERME_REF')) {
+	define('_NOTES_FERME_REF', ']</span>');
+}
+if (!defined('_NOTES_OUVRE_NOTE')) {
+	define('_NOTES_OUVRE_NOTE', '<span class="spip_note_ref">[');
+}
+if (!defined('_NOTES_FERME_NOTE')) {
+	define('_NOTES_FERME_NOTE', ']&nbsp;</span>');
+}
+if (!defined('_NOTES_RACCOURCI')) {
+	define('_NOTES_RACCOURCI', ',\[\[(\s*(<([^>\'"]*)>)?(.*?))\]\],msS');
+}
 
 
 /**
  * Empile ou dépile des notes de bas de page
  *
  * Point d'entrée pour la gestion des notes.
- * 
+ *
  * @note
  *     C'est stocké dans la globale `$les_notes`, mais pas besoin de le savoir
  * @param bool|string|array $arg
@@ -53,26 +65,27 @@ if (!defined('_NOTES_RACCOURCI')) define('_NOTES_RACCOURCI', ',\[\[(\s*(<([^>\'"
  *     True pour ne pas prendre en compte les retours à la ligne comme
  *     des tags br (mais 2 à la suite font un paragraphe tout de même).
  * @return string|array
-**/
-function inc_notes_dist($arg, $operation = 'traiter', $ignorer_autobr = false)
-{
+ **/
+function inc_notes_dist($arg, $operation = 'traiter', $ignorer_autobr = false) {
 	static $pile = array();
 	static $next_marqueur = 1;
 	static $marqueur = 1;
 	global $les_notes, $compt_note, $notes_vues;
-	switch ($operation){
+	switch ($operation) {
 		case 'traiter':
-			if (is_array($arg)) return traiter_les_notes($arg,$ignorer_autobr);
-			else
-				return traiter_raccourci_notes($arg, $marqueur>1?$marqueur:'');
+			if (is_array($arg)) {
+				return traiter_les_notes($arg, $ignorer_autobr);
+			} else {
+				return traiter_raccourci_notes($arg, $marqueur > 1 ? $marqueur : '');
+			}
 			break;
 		case 'empiler':
-			if ($compt_note==0)
-				// si le marqueur n'a pas encore ete utilise, on le recycle dans la pile courante
-				array_push($pile, array(@$les_notes, @$compt_note, $notes_vues,0));
-			else {
+			if ($compt_note == 0) // si le marqueur n'a pas encore ete utilise, on le recycle dans la pile courante
+			{
+				array_push($pile, array(@$les_notes, @$compt_note, $notes_vues, 0));
+			} else {
 				// sinon on le stocke au chaud, et on en cree un nouveau
-				array_push($pile, array(@$les_notes, @$compt_note, $notes_vues,$marqueur));
+				array_push($pile, array(@$les_notes, @$compt_note, $notes_vues, $marqueur));
 				$next_marqueur++; // chaque fois qu'on rempile on incremente le marqueur general
 				$marqueur = $next_marqueur; // et on le prend comme marqueur courant
 			}
@@ -81,37 +94,46 @@ function inc_notes_dist($arg, $operation = 'traiter', $ignorer_autobr = false)
 			break;
 		case 'depiler':
 			#$prev_notes = $les_notes;
-			if (strlen($les_notes)) spip_log("notes perdues");
+			if (strlen($les_notes)) {
+				spip_log("notes perdues");
+			}
 			// si le marqueur n'a pas servi, le liberer
-			if (!strlen($les_notes) AND $marqueur==$next_marqueur)
+			if (!strlen($les_notes) AND $marqueur == $next_marqueur) {
 				$next_marqueur--;
+			}
 			// on redepile tout suite a une fin d'inclusion ou d'un affichage des notes
 			list($les_notes, $compt_note, $notes_vues, $marqueur) = array_pop($pile);
 			#$les_notes .= $prev_notes;
 			// si pas de marqueur attribue, on le fait
-			if (!$marqueur){
+			if (!$marqueur) {
 				$next_marqueur++; // chaque fois qu'on rempile on incremente le marqueur general
 				$marqueur = $next_marqueur; // et on le prend comme marqueur courant
 			}
 			break;
 		case 'sauver_etat':
-			if ($compt_note OR $marqueur>1 OR $next_marqueur>1)
-				return array($les_notes, $compt_note, $notes_vues, $marqueur,$next_marqueur);
-			else
-				return ''; // rien a sauver
+			if ($compt_note OR $marqueur > 1 OR $next_marqueur > 1) {
+				return array($les_notes, $compt_note, $notes_vues, $marqueur, $next_marqueur);
+			} else {
+				return '';
+			} // rien a sauver
 			break;
 		case 'restaurer_etat':
 			if ($arg AND is_array($arg)) // si qqchose a restaurer
-				list($les_notes, $compt_note, $notes_vues, $marqueur,$next_marqueur) = $arg;
+			{
+				list($les_notes, $compt_note, $notes_vues, $marqueur, $next_marqueur) = $arg;
+			}
 			break;
 		case 'contexter_cache':
-			if ($compt_note OR $marqueur>1 OR $next_marqueur>1)
+			if ($compt_note OR $marqueur > 1 OR $next_marqueur > 1) {
 				return array("$compt_note:$marqueur:$next_marqueur");
-			else
+			} else {
 				return '';
+			}
 			break;
 		case 'reset_all': // a n'utiliser qu'a fins de test
-			if (strlen($les_notes)) spip_log("notes perdues [reset_all]");
+			if (strlen($les_notes)) {
+				spip_log("notes perdues [reset_all]");
+			}
 			$pile = array();
 			$next_marqueur = 1;
 			$marqueur = 1;
@@ -123,16 +145,17 @@ function inc_notes_dist($arg, $operation = 'traiter', $ignorer_autobr = false)
 }
 
 
-function traiter_raccourci_notes($letexte, $marqueur_notes)
-{
+function traiter_raccourci_notes($letexte, $marqueur_notes) {
 	global $compt_note, $notes_vues;
 
 	if (strpos($letexte, '[[') === false
-	OR !preg_match_all(_NOTES_RACCOURCI, $letexte, $m, PREG_SET_ORDER))
+		OR !preg_match_all(_NOTES_RACCOURCI, $letexte, $m, PREG_SET_ORDER)
+	) {
 		return array($letexte, array());
+	}
 
 	// quand il y a plusieurs series de notes sur une meme page
-	$mn =  !$marqueur_notes ? '' : ($marqueur_notes.'-');
+	$mn = !$marqueur_notes ? '' : ($marqueur_notes . '-');
 	$mes_notes = array();
 	foreach ($m as $r) {
 		list($note_source, $note_all, $ref, $nom, $note_texte) = $r;
@@ -143,14 +166,15 @@ function traiter_raccourci_notes($letexte, $marqueur_notes)
 		// Cas pathologique:   [[ <a> <a href="x">x</a>]]
 
 		if (!(isset($nom) AND $ref
-		AND ((strpos($note_texte, '</' . $nom .'>') === false)
-		     OR preg_match(",<$nom\W.*</$nom>,", $note_texte)))) {
+			AND ((strpos($note_texte, '</' . $nom . '>') === false)
+				OR preg_match(",<$nom\W.*</$nom>,", $note_texte)))
+		) {
 			$nom = ++$compt_note;
 			$note_texte = $note_all;
 		}
 
 		// eliminer '%' pour l'attribut id
-		$ancre = $mn . str_replace('%','_', rawurlencode($nom));
+		$ancre = $mn . str_replace('%', '_', rawurlencode($nom));
 
 		// ne mettre qu'une ancre par appel de note (XHTML)
 		if (!isset($notes_vues[$ancre])) {
@@ -161,23 +185,26 @@ function traiter_raccourci_notes($letexte, $marqueur_notes)
 		// creer le popup 'title' sur l'appel de note
 		// propre est couteux => nettoyer_raccourcis_typo
 		if ($title = supprimer_tags(nettoyer_raccourcis_typo($note_texte))) {
-			$title = " title='" . couper($title,80) . "'";
+			$title = " title='" . couper($title, 80) . "'";
 		}
 
 		// ajouter la note aux notes precedentes
 		if ($note_texte) {
-			$mes_notes[]= array($ancre, $nom, $note_texte);
+			$mes_notes[] = array($ancre, $nom, $note_texte);
 		}
 
 		// dans le texte, mettre l'appel de note a la place de la note
-		if ($nom) $nom = _NOTES_OUVRE_REF."<a href='#nb$ancre' class='spip_note' rel='footnote'$title$att>$nom</a>"._NOTES_FERME_REF;
+		if ($nom) {
+			$nom = _NOTES_OUVRE_REF . "<a href='#nb$ancre' class='spip_note' rel='footnote'$title$att>$nom</a>" . _NOTES_FERME_REF;
+		}
 
 		$pos = strpos($letexte, $note_source);
 		$letexte = rtrim(substr($letexte, 0, $pos), ' ')
-		. code_echappement($nom)
-		. substr($letexte, $pos + strlen($note_source));
+			. code_echappement($nom)
+			. substr($letexte, $pos+strlen($note_source));
 
 	}
+
 	return array($letexte, $mes_notes);
 }
 
@@ -186,22 +213,24 @@ function traiter_raccourci_notes($letexte, $marqueur_notes)
 function traiter_les_notes($notes, $ignorer_autobr) {
 	$mes_notes = '';
 	if ($notes) {
-		$title =  _T('info_notes');
+		$title = _T('info_notes');
 		foreach ($notes as $r) {
 			list($ancre, $nom, $texte) = $r;
 			$atts = " href='#nh$ancre' class='spip_note' title='$title $ancre' rev='footnote'";
 			$mes_notes .= "\n\n"
-			. "<div id='nb$ancre'><p". ($GLOBALS['class_spip'] ? " class='spip_note'" : "") .">"
-			. code_echappement($nom
-				? _NOTES_OUVRE_NOTE."<a".$atts.">$nom</a>"._NOTES_FERME_NOTE
-				: '')
-			. trim($texte)
-			.'</div>';
+				. "<div id='nb$ancre'><p" . ($GLOBALS['class_spip'] ? " class='spip_note'" : "") . ">"
+				. code_echappement($nom
+					? _NOTES_OUVRE_NOTE . "<a" . $atts . ">$nom</a>" . _NOTES_FERME_NOTE
+					: '')
+				. trim($texte)
+				. '</div>';
 		}
-		if ($ignorer_autobr)
-			$mes_notes = _AUTOBR_IGNORER.$mes_notes;
+		if ($ignorer_autobr) {
+			$mes_notes = _AUTOBR_IGNORER . $mes_notes;
+		}
 		$mes_notes = propre($mes_notes);
 	}
+
 	return ($GLOBALS['les_notes'] .= $mes_notes);
 }
 

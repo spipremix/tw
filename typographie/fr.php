@@ -10,7 +10,9 @@
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined("_ECRIRE_INC_VERSION")) {
+	return;
+}
 
 // Correction typographique francaise
 
@@ -20,13 +22,13 @@ function typographie_fr($t) {
 
 	if (!isset($trans)) {
 		$trans = array(
-		"&nbsp;" => '~',
-		"&raquo;" => '&#187;',
-		"&laquo;" => '&#171;',
-		"&rdquo;" => '&#8221;',
-		"&ldquo;" => '&#8220;',
-		"&deg;" => '&#176;',
-		"'" => '&#8217;'
+			"&nbsp;" => '~',
+			"&raquo;" => '&#187;',
+			"&laquo;" => '&#171;',
+			"&rdquo;" => '&#8221;',
+			"&ldquo;" => '&#8220;',
+			"&deg;" => '&#176;',
+			"'" => '&#8217;'
 		);
 		$charset = isset($GLOBALS['meta']['charset']) ? $GLOBALS['meta']['charset'] : '';
 		switch ($charset) {
@@ -74,12 +76,13 @@ function typographie_fr($t) {
 	/* 4 */
 	$t = preg_replace('/&#171;|M(?:M?\.|mes?|r\.?|&#176;) |[nN]&#176; /S', '$0~', $t);
 
-	if (strpos($t,'\~')!==false){
-		$t = str_replace('\~',"\x1\x14", $t);
+	if (strpos($t, '\~') !== false) {
+		$t = str_replace('\~', "\x1\x14", $t);
 	}
 
-	if (strpos($t, '~') !== false)
+	if (strpos($t, '~') !== false) {
 		$t = preg_replace("/ *~+ */S", "~", $t);
+	}
 
 	$t = preg_replace("/--([^-]|$)/S", "$pro&mdash;$1", $t, -1, $c);
 	if ($c) {
@@ -87,10 +90,10 @@ function typographie_fr($t) {
 		$t = str_replace($pro, '', $t);
 	}
 
-	$t = preg_replace(',(' ._PROTOCOLES_STD . ')~((://[^"\'\s\[\]\}\)<>]+)~([?]))?,S', '$1$3$4', $t);
+	$t = preg_replace(',(' . _PROTOCOLES_STD . ')~((://[^"\'\s\[\]\}\)<>]+)~([?]))?,S', '$1$3$4', $t);
 	$t = str_replace('~', '&nbsp;', $t);
 
-	if (strpos($t,"\x1")!==false){
+	if (strpos($t, "\x1") !== false) {
 		$t = str_replace("\x1\x14", '~', $t);
 	}
 

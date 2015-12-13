@@ -10,7 +10,9 @@
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined("_ECRIRE_INC_VERSION")) {
+	return;
+}
 
 // Correction typographique anglaise
 
@@ -19,8 +21,8 @@ function typographie_en($t) {
 
 	if (!isset($trans)) {
 		$trans = array(
-		"&nbsp;" => '~',
-		"'" => '&#8217;'
+			"&nbsp;" => '~',
+			"'" => '&#8217;'
 		);
 		$charset = isset($GLOBALS['meta']['charset']) ? $GLOBALS['meta']['charset'] : '';
 		switch ($charset) {
@@ -45,12 +47,13 @@ function typographie_en($t) {
 	/* 4 */
 	$t = preg_replace('/Mr\.? /S', '$0~', $t);
 
-	if (strpos($t,'\~')!==false){
-		$t = str_replace('\~',"\x1\x14", $t);
+	if (strpos($t, '\~') !== false) {
+		$t = str_replace('\~', "\x1\x14", $t);
 	}
 
-	if (strpos($t, '~') !== false)
+	if (strpos($t, '~') !== false) {
 		$t = preg_replace("/ *~+ */S", "~", $t);
+	}
 
 	$t = preg_replace("/--([^-]|$)/S", "$pro&mdash;$1", $t, -1, $c);
 	if ($c) {
@@ -60,7 +63,7 @@ function typographie_en($t) {
 
 	$t = str_replace('~', '&nbsp;', $t);
 
-	if (strpos($t,"\x1")!==false){
+	if (strpos($t, "\x1") !== false) {
 		$t = str_replace("\x1\x14", '~', $t);
 	}
 

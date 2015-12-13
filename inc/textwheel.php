@@ -10,13 +10,17 @@
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
-if (!defined("_ECRIRE_INC_VERSION")) return;
+if (!defined("_ECRIRE_INC_VERSION")) {
+	return;
+}
 
 include_spip('engine/textwheel');
 // si une regle change et rend son cache non valide
 // incrementer ce define au numero de commit concerne
 // (inconsistence entre la wheel et l'inclusion php)
-if (!defined('_WHEELS_VERSION')) define('_WHEELS_VERSION',68672);
+if (!defined('_WHEELS_VERSION')) {
+	define('_WHEELS_VERSION', 68672);
+}
 
 //
 // Definition des principales wheels de SPIP
@@ -26,12 +30,12 @@ if (!isset($GLOBALS['spip_wheels'])) {
 }
 
 // Si le tableau des raccourcis existe déjà
-if (!isset($GLOBALS['spip_wheels']['raccourcis']) OR !is_array($GLOBALS['spip_wheels']['raccourcis']))
+if (!isset($GLOBALS['spip_wheels']['raccourcis']) OR !is_array($GLOBALS['spip_wheels']['raccourcis'])) {
 	$GLOBALS['spip_wheels']['raccourcis'] = array(
 		'spip/spip.yaml',
 		'spip/spip-paragrapher.yaml'
 	);
-else
+} else {
 	$GLOBALS['spip_wheels']['raccourcis'] = array_merge(
 		array(
 			'spip/spip.yaml',
@@ -39,9 +43,11 @@ else
 		),
 		$GLOBALS['spip_wheels']['raccourcis']
 	);
+}
 
-if (test_espace_prive ())
+if (test_espace_prive()) {
 	$GLOBALS['spip_wheels']['raccourcis'][] = 'spip/ecrire.yaml';
+}
 
 $GLOBALS['spip_wheels']['interdire_scripts'] = array(
 	'spip/interdire-scripts.yaml'
@@ -64,18 +70,20 @@ $GLOBALS['spip_wheels']['listes'] = array(
 //
 
 class SPIPTextWheelRuleset extends TextWheelRuleSet {
-	protected function findFile(&$file, $path = ''){
+	protected function findFile(&$file, $path = '') {
 		static $default_path;
 
 		// absolute file path?
-		if (file_exists($file))
+		if (file_exists($file)) {
 			return $file;
+		}
 
 		// file include with texwheels, relative to calling ruleset
-		if ($path AND file_exists($f = $path.$file))
+		if ($path AND file_exists($f = $path . $file)) {
 			return $f;
+		}
 
-		return find_in_path($file,'wheels/');
+		return find_in_path($file, 'wheels/');
 	}
 
 	public static function &loader($ruleset, $callback = '', $class = 'SPIPTextWheelRuleset') {
@@ -84,14 +92,17 @@ class SPIPTextWheelRuleset extends TextWheelRuleSet {
 		# attention : le ruleset peut contenir apres loading des chemins relatifs
 		# il faut donc que le cache depende du chemin courant vers la racine de SPIP
 		$key = "";
-		if ($callback)
+		if ($callback) {
 			$key = $callback($key);
-		$key = 'tw-'.md5(_WHEELS_VERSION."-".serialize($ruleset).$key.$class._DIR_RACINE);
+		}
+		$key = 'tw-' . md5(_WHEELS_VERSION . "-" . serialize($ruleset) . $key . $class . _DIR_RACINE);
 
 		# lecture du cache
-		if ((!defined('_VAR_MODE') OR _VAR_MODE!='recalcul')
-		  AND $cacheruleset = tw_cache_get($key))
+		if ((!defined('_VAR_MODE') OR _VAR_MODE != 'recalcul')
+			AND $cacheruleset = tw_cache_get($key)
+		) {
 			return $cacheruleset;
+		}
 
 		# calcul de la wheel
 		$ruleset = parent::loader($ruleset, $callback, $class);
@@ -104,9 +115,11 @@ class SPIPTextWheelRuleset extends TextWheelRuleSet {
 }
 
 
-function tw_trig_purger($quoi){
-	if ($quoi=='cache')
-		purger_repertoire(_DIR_CACHE."wheels");
+function tw_trig_purger($quoi) {
+	if ($quoi == 'cache') {
+		purger_repertoire(_DIR_CACHE . "wheels");
+	}
+
 	return $quoi;
 }
 
@@ -120,10 +133,11 @@ function tw_trig_purger($quoi){
  * @return mixed
  */
 function tw_cache_get($key) {
-	if (function_exists('cache_get')){
+	if (function_exists('cache_get')) {
 		return cache_get($key);
 	}
-	return @unserialize(file_get_contents(_DIR_CACHE."wheels/".$key.".txt"));
+
+	return @unserialize(file_get_contents(_DIR_CACHE . "wheels/" . $key . ".txt"));
 }
 
 /**
@@ -136,10 +150,11 @@ function tw_cache_get($key) {
  * @param int|null $ttl
  * @return bool
  */
-function tw_cache_set($key, $value, $ttl=null) {
-	if (function_exists('cache_set')){
+function tw_cache_set($key, $value, $ttl = null) {
+	if (function_exists('cache_set')) {
 		return cache_set($key, $value, $ttl);
 	}
-	$dir = sous_repertoire(_DIR_CACHE,"wheels/");
-	return ecrire_fichier($dir.$key.".txt", serialize($value));
+	$dir = sous_repertoire(_DIR_CACHE, "wheels/");
+
+	return ecrire_fichier($dir . $key . ".txt", serialize($value));
 }

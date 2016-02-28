@@ -679,7 +679,7 @@ function traiter_raccourcis($t, $show_autobr = false) {
 	}
 
 	if (_AUTOBR and !function_exists('aide_lang_dir')) {
-		include_spip('inc/aider');
+		include_spip('inc/lang');
 	}
 
 	// hack2: wrap des autobr dans l'espace prive, pour affichage css

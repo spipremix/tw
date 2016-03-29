@@ -846,7 +846,7 @@ function traiter_modeles($texte, $doublons = false, $echap = '', $connect = '', 
 			// hack pour tout l'espace prive
 			if (((!_DIR_RESTREINT) or ($doublons)) and ($id)) {
 				foreach ($doublons ? $doublons : array('documents' => array('doc', 'emb', 'img')) as $quoi => $modeles) {
-					if (in_array($type, $modeles)) {
+					if (in_array(strtolower($type), $modeles)) {
 						$GLOBALS["doublons_{$quoi}_inclus"][] = $id;
 					}
 				}

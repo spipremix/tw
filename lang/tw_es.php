@@ -14,4 +14,3 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 	'retour_ligne_ignore' => 'Volver a línea ignorada',
 	'retour_ligne_manuel' => 'Volver a línea manual'
 );
-

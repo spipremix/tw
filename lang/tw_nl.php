@@ -14,4 +14,3 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 	'retour_ligne_ignore' => 'Terugloop negeren',
 	'retour_ligne_manuel' => 'Handmatige terugloop'
 );
-

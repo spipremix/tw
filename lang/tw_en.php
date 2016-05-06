@@ -14,4 +14,3 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 	'retour_ligne_ignore' => 'Ignore word wrap',
 	'retour_ligne_manuel' => 'Manual word wrap'
 );
-

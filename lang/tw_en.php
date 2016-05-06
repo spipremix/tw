@@ -15,4 +15,3 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 	'retour_ligne_manuel' => 'Manual word wrap'
 );
 
-?>

@@ -13,4 +13,3 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 	'retour_ligne_manuel' => 'Retour ligne manuel'
 );
 
-?>

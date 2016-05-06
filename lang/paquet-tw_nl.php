@@ -14,4 +14,3 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 	'tw_slogan' => 'Beheer van de SPIP typografie dank zij TextWheel'
 );
 
-?>

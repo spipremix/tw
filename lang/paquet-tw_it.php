@@ -13,4 +13,3 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 	'tw_description' => 'Integra TextWheel in SPIP',
 	'tw_slogan' => 'Gestione della tipografia di SPIP con TextWheel'
 );
-

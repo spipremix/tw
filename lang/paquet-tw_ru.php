@@ -13,4 +13,3 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 	'tw_description' => 'Интегрировать TextWheel в SPIP',
 	'tw_slogan' => 'Управлять оформлением SPIP c помощью TextWheel'
 );
-

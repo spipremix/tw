@@ -13,4 +13,3 @@ $GLOBALS[$GLOBALS['idx_lang']] = array(
 	'tw_description' => 'ادغام چرخ‌نويس (TextWheel) در اسپيپ',
 	'tw_slogan' => 'مديريت حروف‌نگاري در اسپيپ با چرخ‌نويس '
 );
-

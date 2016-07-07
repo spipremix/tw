@@ -523,6 +523,7 @@ function traiter_tableau($bloc) {
 		$html = "<tr class='row_$class $class'>$ligne</tr>\n$html";
 	}
 
+	if(html5_permis()) $summary="";
 	return "\n\n<table" . $GLOBALS['class_spip_plus'] . $summary . ">\n"
 	. $debut_table
 	. "<tbody>\n"

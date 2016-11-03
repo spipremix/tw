@@ -455,19 +455,24 @@ define('_EXTRAIRE_DOMAINE', '/^(?:(?:[^\W_]((?:[^\W_]|-){0,61}[^\W_,])?\.)+[a-z0
 define('_RACCOURCI_CHAPO', '/^(\W*)(\W*)(\w*\d+([?#].*)?)$/');
 
 /**
- * Fonction pour les champs virtuels de redirection qui peut etre:
- * 1. un raccourci Spip habituel (premier If) [texte->TYPEnnn]
- * 2. un ultra raccourci TYPEnnn voire nnn (article) (deuxieme If)
- * 3. une URL std
- *
- * renvoie l'url reelle de redirection si le $url=true,
- * l'url brute contenue dans le chapo sinon
- *
- * http://code.spip.net/@chapo_redirige
+ * Retourne la valeur d'un champ de redirection (articles virtuels)
+ * 
+ * L'entrée accepte plusiers types d'écritures : 
+ * - une URL compète, 
+ * - un lien SPIP tel que `[Lien->article23]`, 
+ * - ou un raccourcis SPIP comme `rub2` ou `rubrique2`
  *
  * @param string $virtuel
+ *     Texte qui définit la redirection, à analyser. 
+ *     Plusieurs types peuvent être acceptés :
+ *     - un raccourci Spip habituel, tel que `[texte->TYPEnnn]`
+ *     - un ultra raccourci Spip, tel que `TYPEnnn`
+ *     - une URL standard
  * @param bool $url
+ *     false : retourne uniquement le nom du lien (TYPEnnn)
+ *     true : retourne l'URL calculée pour le lien
  * @return string
+ *     Nom du lien ou URL
  */
 function virtuel_redirige($virtuel, $url = false) {
 	if (!strlen($virtuel)) {

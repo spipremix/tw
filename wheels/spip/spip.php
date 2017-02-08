@@ -24,7 +24,7 @@ function replace_math($t) {
 		include_spip('inc/math');
 	}
 
-	$t = traiter_math($t, '');
+	$t = traiter_math($t, '', true);
 
 	return $t;
 }

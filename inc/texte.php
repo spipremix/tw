@@ -310,9 +310,13 @@ function corriger_typo($t, $lang = '') {
 		}
 	}
 
-	// trouver les blocs multi et les traiter a part
-	$t = extraire_multi($e = $t, $lang, true);
-	$e = ($e === $t);
+	// trouver les blocs idiomes et les traiter à part
+	$t = extraire_idiome($ei = $t, $lang, true);
+	$ei = ($ei !== $t);
+
+	// trouver les blocs multi et les traiter à part
+	$t = extraire_multi($em = $t, $lang, true);
+	$em = ($em !== $t);
 
 	// Charger & appliquer les fonctions de typographie
 	$idxl = "$lang:" . (isset($GLOBALS['lang_objet']) ? $GLOBALS['lang_objet'] : $GLOBALS['spip_lang']);
@@ -322,7 +326,10 @@ function corriger_typo($t, $lang = '') {
 	$t = $typographie[$idxl]($t);
 
 	// Les citations en une autre langue, s'il y a lieu
-	if (!$e) {
+	if ($ei) {
+		$t = echappe_retour($t, 'idiome');
+	}
+	if ($em) {
 		$t = echappe_retour($t, 'multi');
 	}
 

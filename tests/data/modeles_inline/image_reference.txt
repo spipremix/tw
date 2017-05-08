@@ -1,3 +1,3 @@
-<http://www.spip.net/IMG/siteon0.jpg>
+<https://www.spip.net/IMG/siteon0.jpg>
 
-<img src="http://www.spip.net/IMG/siteon0.jpg" alt="<textwheel1|inline>" />
+<img src="https://www.spip.net/IMG/siteon0.jpg" alt="<textwheel1|inline>" />

@@ -375,7 +375,7 @@ function nettoyer_raccourcis_typo($texte, $connect = '') {
 	$texte = preg_replace(_RACCOURCI_ANCRE, "", $texte);
 
 	// supprimer les notes
-	$texte = preg_replace(",[[][[]([^]]|[]][^]])*[]][]],UimsS", "", $texte);
+	$texte = preg_replace(",\[\[.*\]\],UimsS", "", $texte);
 
 	// supprimer les codes typos
 	$texte = str_replace(array('}', '{'), '', $texte);

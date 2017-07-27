@@ -340,11 +340,30 @@ function expanser_un_lien($reg, $quoi = 'echappe', $env = null) {
 	}
 }
 
-// Meme analyse mais pour eliminer les liens
-// et ne laisser que leur titre, a expliciter si ce n'est fait
-// https://code.spip.net/@nettoyer_raccourcis_typo
+/**
+ * Nettoie un texte en enlevant les raccourcis typo, sans les traiter
+ *
+ * On ne laisse que les titres des liens, en les explicitant si ce n’est pas fait.
+ *
+ * @param string $texte
+ * @param string $connect
+ * @return string
+ */
 function nettoyer_raccourcis_typo($texte, $connect = '') {
 	$texte = pipeline('nettoyer_raccourcis_typo', $texte);
+
+	// on utilise les \r pour passer entre les gouttes
+	$texte = str_replace("\r\n", "\n", $texte);
+	$texte = str_replace("\r", "\n", $texte);
+
+	// sauts de ligne et paragraphes
+	$texte = preg_replace("/\n\n+/", "\r", $texte);
+
+	// supprimer les traits, lignes etc
+	$texte = preg_replace("/(^|\r|\n)(-[-#\*]*\s?|_ )/", "\n", $texte);
+
+	// travailler en accents charset
+	$texte = unicode2charset(html2unicode($texte, true /* secure */ ));
 
 	if (preg_match_all(_RACCOURCI_LIEN, $texte, $regs, PREG_SET_ORDER)) {
 		include_spip('inc/texte');
@@ -375,13 +394,19 @@ function nettoyer_raccourcis_typo($texte, $connect = '') {
 	$texte = preg_replace(_RACCOURCI_ANCRE, "", $texte);
 
 	// supprimer les notes
-	$texte = preg_replace(",[[][[]([^]]|[]][^]])*[]][]],UimsS", "", $texte);
+	$texte = preg_replace(",\[\[.*\]\],UimsS", "", $texte);
 
 	// supprimer les codes typos
 	$texte = str_replace(array('}', '{'), '', $texte);
 
 	// supprimer les tableaux
-	$texte = preg_replace(",(^|\r)\|.*\|\r,s", "\r", $texte);
+	$texte = preg_replace(",(?:^|\r|\n)\|.*\|(?:\r|\n|$),s", "\r", $texte);
+
+	// indiquer les sauts de paragraphes
+	$texte = str_replace("\r", "\n\n", $texte);
+	$texte = str_replace("\n\n+", "\n\n", $texte);
+
+	$texte = trim($texte);
 
 	return $texte;
 }

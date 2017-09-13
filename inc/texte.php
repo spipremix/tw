@@ -758,6 +758,14 @@ function propre($t, $connect = null, $env = array()) {
 
 	$t = pipeline('pre_echappe_html_propre', $t);
 
+	// Dans l'espace prive on se mefie de tout contenu dangereux
+	// avant echappement des balises <html>
+	// https://core.spip.net/issues/3371
+	if ($interdire_script
+		or (isset($env['espace_prive']) and $env['espace_prive'])
+		or (isset($env['wysiwyg']) and $env['wysiwyg'])) {
+		$t = echapper_html_suspect($t, false);
+	}
 	$t = echappe_html($t);
 	$t = expanser_liens($t, $connect, $env);
 

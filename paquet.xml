@@ -20,7 +20,8 @@
 	<pipeline nom="pre_liens" action="autoliens" inclure="inc/autoliens.php" />
 	<pipeline nom="post_typo" action="post_typo" inclure="inc/ressource-mini.php" />
 	<pipeline nom="pre_liens" action="pre_liens" inclure="inc/ressource-mini.php" />
-	<utilise nom="yaml" compatibilite="[1.5.2;]" />
-	<utilise nom="memoization" compatibilite="[1.5.4;]" />
+
+	<utilise nom="yaml" compatibilite="[1.5.3;]" />
+	<utilise nom="memoization" compatibilite="[1.8.3;]" />
 
 </paquet>

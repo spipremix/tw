@@ -451,7 +451,6 @@ function traiter_raccourci_lien_atts($texte) {
 	return array(trim($texte), $bulle, $hlang);
 }
 
-define('_EXTRAIRE_DOMAINE', '/^(?:(?:[^\W_]((?:[^\W_]|-){0,61}[^\W_,])?\.)+[a-z0-9]{2,6}|localhost)\b/Si');
 define('_RACCOURCI_CHAPO', '/^(\W*)(\W*)(\w*\d+([?#].*)?)$/');
 
 /**

@@ -1,5 +1,6 @@
 <?php
 
+define('_EXTRAIRE_DOMAINE', '/^(?:(?:[^\W_]((?:[^\W_]|-){0,61}[^\W_,])?\.)+[a-z0-9]{2,6}|localhost)\b/Si');
 
 // Les URLs brutes sont converties en <a href='url'>url</a>
 // https://code.spip.net/@traiter_raccourci_liens

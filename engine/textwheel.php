@@ -28,6 +28,8 @@ class TextWheel {
 	protected $ruleset;
 	protected static $subwheel = array();
 
+	// Experimental : projet de compilation PHP d'une wheel
+	// pour generation d'un fichier php execute a la place de ->text()
 	protected $compiled = array();
 
 	/**
@@ -83,13 +85,14 @@ class TextWheel {
 		foreach ($rules as $name => $rule) {
 			$rule->name = $name;
 			$this->initRule($rule);
-			if (is_string($rule->replace)
-				and isset($this->compiled[$rule->replace])
-				and $fun = $this->compiled[$rule->replace]
+			if ($rule->replace
+				and $compiledEntry = $this->ruleCompiledEntryName($rule->replace)
+				and isset($this->compiled[$compiledEntry])
+				and $fun = $this->compiled[$compiledEntry]
 			) {
 				$pre[] = "\n###\n## $name\n###\n" . $fun;
 				preg_match(',function (\w+), ', $fun, $r);
-				$rule->compilereplace = $r[1]; # ne pas modifier ->replace sinon on casse l'execution...
+				$rule->compilereplace = "'".$r[1]."'"; # ne pas modifier ->replace sinon on casse l'execution...
 			}
 
 			$r = "\t/* $name */\n";
@@ -109,9 +112,18 @@ class TextWheel {
 
 			if ($rule->func_replace !== 'replace_identity') {
 				$fun = 'TextWheel::' . $rule->func_replace;
+				$call = '';
 				switch ($fun) {
 					case 'TextWheel::replace_all_cb':
-						$fun = $rule->replace; # trim()...
+						if (is_string($rule->replace)) {
+							$fun = $rule->replace;
+						}
+						elseif ($rule->compilereplace) {
+							$fun = trim($rule->compilereplace, "'");
+						};
+						if ($fun) {
+							$call = "\$t = $fun(\$t);";
+						}
 						break;
 					case 'TextWheel::replace_preg':
 						$fun = 'preg_replace';
@@ -125,7 +137,13 @@ class TextWheel {
 					default:
 						break;
 				}
-				$r .= "\t" . '$t = ' . $fun . '(' . TextWheel::export($rule->match) . ', ' . TextWheel::export($rule->replace) . ', $t);' . "\n";
+				if (!$call) {
+					if (empty($rule->compilereplace)) {
+						$rule->compilereplace = TextWheel::export($rule->replace);
+					}
+					$call = '$t = ' . $fun . '(' . TextWheel::export($rule->match) . ', ' . $rule->compilereplace . ', $t);';
+				}
+				$r .= "\t$call\n";
 			}
 
 			$comp[] = $r;
@@ -162,6 +180,20 @@ class TextWheel {
 	}
 
 	/**
+	 * @param $replace
+	 * @return string
+	 */
+	protected function ruleCompiledEntryName($replace) {
+		if (is_array($replace)) {
+			return serialize($replace);
+		}
+		elseif (is_object($replace)) {
+			return get_class($replace) . ':' . spl_object_hash($replace);
+		}
+		return $replace;
+	}
+
+	/**
 	 * Initializing a rule a first call
 	 * including file, creating function or wheel
 	 * optimizing tests
@@ -183,25 +215,35 @@ class TextWheel {
 		}
 
 		if ($rule->create_replace) {
+			// DEPRECATED : rule->create_replace, on ne peut rien faire de mieux ici
+			// mais c'est voue a disparaitre
 			$compile = $rule->replace . '($t)';
 			$rule->replace = create_function('$m', $rule->replace);
-			$this->compiled[$rule->replace] = $compile;
+			$this->compiled[$this->ruleCompiledEntryName($rule->replace)] = $compile;
 			$rule->create_replace = false;
 			$rule->is_callback = true;
-		} elseif ($rule->is_wheel) {
-			$n = count(TextWheel::$subwheel);
+		}
+		elseif ($rule->is_wheel) {
+			$rule_number = count(TextWheel::$subwheel);
 			TextWheel::$subwheel[] = $this->createSubWheel($rule->replace);
-			$var = '$m[' . intval($rule->pick_match) . ']';
+			$cname = 'compiled_' . str_replace('-', '_', $rule->name) . '_' . substr(md5(spl_object_hash($rule)),0,7);
 			if ($rule->type == 'all' or $rule->type == 'str' or $rule->type == 'split' or !isset($rule->match)) {
-				$var = '$m';
+				$rule->replace = function ($m) use ($rule_number) {
+					return TextWheel::getSubWheel($rule_number)->text($m);
+				};
+				$rule->compilereplace = "'$cname'";
 			}
-			$code = 'return TextWheel::getSubWheel(' . $n . ')->text(' . $var . ');';
-			$rule->replace = create_function('$m', $code);
-			$cname = 'compiled_' . str_replace('-', '_', $rule->name);
-			$compile = TextWheel::getSubWheel($n)->compile($cname);
-			$this->compiled[$rule->replace] = $compile;
+			else {
+				$pick_match = intval($rule->pick_match);
+				$rule->replace = function ($m) use ($rule_number, $pick_match) {
+					return TextWheel::getSubWheel($rule_number)->text($m[$pick_match]);
+				};
+				$rule->compilereplace = 'function ($m) { return '.$cname.'($m['.$pick_match.']) }';
+			}
 			$rule->is_wheel = false;
 			$rule->is_callback = true;
+			$compile = TextWheel::getSubWheel($rule_number)->compile($cname);
+			$this->compiled[$this->ruleCompiledEntryName($rule->replace)] = $compile;
 		}
 
 		# optimization

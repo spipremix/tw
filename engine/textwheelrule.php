@@ -65,10 +65,12 @@ class TextWheelRule {
 	# optional
 	# language specific
 	public $require; # file to require_once
+	# DEPRECATED : create_function deprecated a partir de PHP 7.2, ne plus utiliser
 	public $create_replace; # do create_function('$m', %) on $this->replace, $m is the matched array
 
 	# optimizations
 	public $func_replace;
+	public $compilereplace;
 
 	/**
 	 * Rule constructor

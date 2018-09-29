@@ -539,7 +539,15 @@ function traiter_tableau($bloc) {
 		$html = "<tr class='row_$class $class'>$ligne</tr>\n$html";
 	}
 
-	return "\n\n<table" . $GLOBALS['class_spip_plus'] . $summary . ">\n"
+	$class = $GLOBALS['class_spip_plus'];
+	if (!$class or strpos($GLOBALS['class_spip_plus'],'class=') === false) {
+		$class = ' ' . trim('class="table" ' . $class);
+	}
+	else {
+		$class = str_replace('class="','class="table ', $class);
+		$class = str_replace("class='","class='table ", $class);
+	}
+	return "\n\n<table" . $class . $summary . ">\n"
 	. $debut_table
 	. "<tbody>\n"
 	. $html

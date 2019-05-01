@@ -1,0 +1,11 @@
+{
+    "name": "spip/tw",
+    "type": "spip-plugin",
+    "description": "Gestion de la typographie SPIP avec TextWheel",
+    "license": "GPL-3.0-or-later",
+    "authors": [{
+        "name": "Collectif SPIP",
+        "email": "spip-dev@rezo.net"
+    }],
+    "require": {}
+}
